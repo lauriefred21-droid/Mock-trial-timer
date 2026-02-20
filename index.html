@@ -179,7 +179,7 @@
       font-weight:950;
       cursor:pointer;
       user-select:none;
-      min-height:48px; /* iPhone-friendly target */
+      min-height:48px;
     }
     button:active{ transform: scale(0.99); }
 
@@ -242,21 +242,18 @@
       font-size:16px;
     }
 
-    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    @media (max-width:520px){ .row2{ grid-template-columns:1fr; } }
-
-    button.endround{
-      background: rgba(255, 181, 72, 0.92);
-      border-color: rgba(255, 181, 72, 0.92);
-      color:#0b1020;
-      font-weight:990;
-      letter-spacing:.3px;
-      min-height:52px;
-    }
     button.resetall{
       background: rgba(44,203,161,0.92);
       border-color: rgba(44,203,161,0.92);
       color:#071018;
+      font-weight:990;
+      letter-spacing:.3px;
+      min-height:46px;
+    }
+    button.endround{
+      background: rgba(255, 181, 72, 0.92);
+      border-color: rgba(255, 181, 72, 0.92);
+      color:#0b1020;
       font-weight:990;
       letter-spacing:.3px;
       min-height:52px;
@@ -320,6 +317,8 @@
         <label class="roleopt"><input type="radio" name="role" value="def" id="roleDef"> Defense</label>
       </div>
     </div>
+
+    <button class="resetall" id="resetEverythingBtn" title="Reset all timers and clear speech log">Reset Everything</button>
 
     <label class="chip" title="Keep screen awake (if supported)">
       <input id="wakeToggle" type="checkbox" />
@@ -390,18 +389,9 @@
         <button class="objection" id="objectionPause">Pause current speeches</button>
         <button class="resume" id="objectionResume">Resume current speeches</button>
       </div>
-
-      <div class="row2">
-        <button class="endround" id="endRoundBtn">End Round (save speech log)</button>
-        <button class="resetall" id="resetEverythingBtn">Reset Everything</button>
-      </div>
-
-      <div class="small">
-        Reset Everything clears all timers and clears the speech log.
-      </div>
     </section>
 
-    <!-- Total Round Time (BOTTOM) -->
+    <!-- Total Round Time (BOTTOM) + End Round moved here -->
     <section class="card span-2" aria-label="Total Round Time">
       <div class="label">
         <div class="name">Total Round Time</div>
@@ -412,6 +402,10 @@
         <button class="primary" id="roundStart">Start</button>
         <button class="pause" id="roundPause">Pause</button>
         <button class="reset" id="roundReset">Reset</button>
+      </div>
+
+      <div class="controls" style="margin-top:10px; grid-template-columns: 1fr;">
+        <button class="endround" id="endRoundBtn">End Round (save speech log)</button>
       </div>
 
       <div class="log" aria-label="Speech Log">
@@ -434,7 +428,6 @@
 </div>
 
 <script>
-  // ---------- Formatting ----------
   function formatMsToMMSS(ms) {
     ms = Math.max(0, ms);
     const totalSeconds = Math.floor(ms / 1000);
@@ -444,7 +437,6 @@
   }
   function nowMs() { return Date.now(); }
 
-  // ---------- Stopwatch: true-time based on epoch ----------
   class Stopwatch {
     constructor(key) {
       this.key = key;
@@ -453,20 +445,16 @@
       this.startedAtEpoch = 0;
       this._load();
     }
-
     getElapsedMs() {
       if (!this.running) return this.elapsedMs;
-      // True elapsed regardless of render cadence
       return this.elapsedMs + (nowMs() - this.startedAtEpoch);
     }
-
     start() {
       if (this.running) return;
       this.running = true;
       this.startedAtEpoch = nowMs();
       this._save();
     }
-
     stop() {
       if (!this.running) return;
       this.elapsedMs = this.getElapsedMs();
@@ -474,13 +462,11 @@
       this.startedAtEpoch = 0;
       this._save();
     }
-
     reset() {
       this.elapsedMs = 0;
       if (this.running) this.startedAtEpoch = nowMs();
       this._save();
     }
-
     _save() {
       localStorage.setItem(this.key, JSON.stringify({
         elapsedMs: this.elapsedMs,
@@ -488,7 +474,6 @@
         startedAtEpoch: this.startedAtEpoch
       }));
     }
-
     _load() {
       try {
         const raw = localStorage.getItem(this.key);
@@ -501,16 +486,13 @@
     }
   }
 
-  // ---------- Timers ----------
   const speech = new Stopwatch('mt_speech');
   const pros   = new Stopwatch('mt_pros');
   const def    = new Stopwatch('mt_def');
   const round  = new Stopwatch('mt_round');
 
-  // ---------- Role (never auto-changed) ----------
   const rolePros = document.getElementById('rolePros');
   const roleDef  = document.getElementById('roleDef');
-
   function getRole() {
     const saved = localStorage.getItem('mt_role');
     if (saved === 'pros' || saved === 'def') return saved;
@@ -521,14 +503,11 @@
     rolePros.checked = r === 'pros';
     roleDef.checked  = r === 'def';
   }
-
   const initialRole = getRole();
   if (initialRole) setRole(initialRole);
-
   rolePros.addEventListener('change', () => { if (rolePros.checked) setRole('pros'); });
   roleDef.addEventListener('change', () => { if (roleDef.checked) setRole('def'); });
 
-  // ---------- Speech log ----------
   function loadSpeechLog() {
     try { return JSON.parse(localStorage.getItem('mt_speech_log') || '[]'); }
     catch { return []; }
@@ -536,11 +515,11 @@
   function saveSpeechLog(log) {
     localStorage.setItem('mt_speech_log', JSON.stringify(log));
   }
-  let speechLog = loadSpeechLog(); // {seconds, role, at, reason}
+  let speechLog = loadSpeechLog();
 
   function maybeLogCurrentSpeech(reason) {
     const ms = speech.getElapsedMs();
-    if (ms < 1000) return false; // ignore tiny
+    if (ms < 1000) return false;
     const seconds = Math.floor(ms / 1000);
     speechLog.push({
       seconds,
@@ -552,7 +531,6 @@
     return true;
   }
 
-  // ---------- UI refs ----------
   const speechTimeEl = document.getElementById('speechTime');
   const prosTimeEl   = document.getElementById('prosTime');
   const defTimeEl    = document.getElementById('defTime');
@@ -562,17 +540,14 @@
   const prosHint   = document.getElementById('prosHint');
   const defHint    = document.getElementById('defHint');
   const roundHint  = document.getElementById('roundHint');
-
   const runningIndicator = document.getElementById('runningIndicator');
 
   const logList = document.getElementById('logList');
   const logHint = document.getElementById('logHint');
 
-  // ---------- Mutual exclusion: pros/def never run together ----------
   function startPros() { if (def.running) def.stop(); pros.start(); }
   function startDef()  { if (pros.running) pros.stop(); def.start(); }
 
-  // ---------- Render (lightweight) ----------
   function render() {
     speechTimeEl.textContent = formatMsToMMSS(speech.getElapsedMs());
     prosTimeEl.textContent   = formatMsToMMSS(pros.getElapsedMs());
@@ -591,35 +566,28 @@
     if (round.running)  running.push('Round');
     runningIndicator.textContent = running.length ? `Running: ${running.join(', ')}` : 'All stopped';
   }
-
-  // UI refresh cadence (accuracy is independent of this)
   setInterval(render, 250);
   render();
 
-  // ---------- Speech controls with role sync ----------
   function speechStartSynced() {
     speech.start();
     const r = getRole();
     if (r === 'pros') startPros();
     if (r === 'def')  startDef();
   }
-
   function speechPauseSynced() {
     speech.stop();
     const r = getRole();
     if (r === 'pros') pros.stop();
     if (r === 'def')  def.stop();
   }
-
   document.getElementById('speechStart').addEventListener('click', speechStartSynced);
   document.getElementById('speechPause').addEventListener('click', speechPauseSynced);
   document.getElementById('speechReset').addEventListener('click', () => {
-    // Log then reset
     maybeLogCurrentSpeech('speech_reset');
     speech.reset();
   });
 
-  // ---------- Side controls (manual; still enforce mutual exclusion) ----------
   document.getElementById('prosStart').addEventListener('click', startPros);
   document.getElementById('prosPause').addEventListener('click', () => pros.stop());
   document.getElementById('prosReset').addEventListener('click', () => pros.reset());
@@ -628,68 +596,42 @@
   document.getElementById('defPause').addEventListener('click', () => def.stop());
   document.getElementById('defReset').addEventListener('click', () => def.reset());
 
-  // ---------- Round controls (manual pause option) ----------
   document.getElementById('roundStart').addEventListener('click', () => round.start());
   document.getElementById('roundPause').addEventListener('click', () => round.stop());
   document.getElementById('roundReset').addEventListener('click', () => round.reset());
 
-  // ---------- Objections Mode (pause/resume only the running set, NOT round) ----------
   let pausedSet = { speech: false, pros: false, def: false };
-
   function objectionPause() {
-    pausedSet = {
-      speech: speech.running,
-      pros: pros.running,
-      def: def.running
-    };
-    speech.stop();
-    pros.stop();
-    def.stop();
+    pausedSet = { speech: speech.running, pros: pros.running, def: def.running };
+    speech.stop(); pros.stop(); def.stop();
   }
-
   function objectionResume() {
     if (pausedSet.speech) speech.start();
     if (pausedSet.pros) startPros();
     if (pausedSet.def) startDef();
     pausedSet = { speech: false, pros: false, def: false };
   }
-
   document.getElementById('objectionPause').addEventListener('click', objectionPause);
   document.getElementById('objectionResume').addEventListener('click', objectionResume);
 
-  // ---------- End Round / Reset Everything ----------
   function endRound() {
-    // Log current speech if it has time
     maybeLogCurrentSpeech('end_round');
-
-    // Stop all timers
-    speech.stop();
-    pros.stop();
-    def.stop();
-    round.stop();
-
-    // Update log UI
+    speech.stop(); pros.stop(); def.stop(); round.stop();
     renderLog();
+    render();
   }
+  document.getElementById('endRoundBtn').addEventListener('click', endRound);
 
   function resetEverything() {
-    // Stop first (avoids weirdness)
     speech.stop(); pros.stop(); def.stop(); round.stop();
-
-    // Reset timers
     speech.reset(); pros.reset(); def.reset(); round.reset();
-
-    // Clear speech log
     speechLog = [];
     saveSpeechLog(speechLog);
     renderLog();
     render();
   }
-
-  document.getElementById('endRoundBtn').addEventListener('click', endRound);
   document.getElementById('resetEverythingBtn').addEventListener('click', resetEverything);
 
-  // ---------- Log UI + Export ----------
   function renderLog() {
     logList.innerHTML = '';
     if (!speechLog.length) {
@@ -738,11 +680,9 @@
       await navigator.clipboard.writeText(text);
       logHint.textContent = `Copied to clipboard ✓ (${speechLog.length} speeches)`;
     } catch {
-      // iOS Safari can be picky; fallback prompt
       window.prompt('Copy this log:', text);
     }
   }
-
   document.getElementById('exportLogBtn').addEventListener('click', exportLog);
   document.getElementById('clearLogBtn').addEventListener('click', () => {
     speechLog = [];
@@ -750,10 +690,9 @@
     renderLog();
   });
 
-  // Initial log render
   renderLog();
 
-  // ---------- Wake Lock ----------
+  // Wake Lock
   let wakeLock = null;
   async function requestWakeLock() {
     try {
@@ -766,7 +705,6 @@
     try { if (wakeLock) await wakeLock.release(); } catch {}
     wakeLock = null;
   }
-
   const wakeToggle = document.getElementById('wakeToggle');
   wakeToggle.addEventListener('change', async () => {
     if (wakeToggle.checked) {
@@ -777,7 +715,6 @@
     }
     localStorage.setItem('mt_wake', JSON.stringify({ enabled: wakeToggle.checked }));
   });
-
   try {
     const s = JSON.parse(localStorage.getItem('mt_wake') || '{}');
     if (s.enabled) {
@@ -785,14 +722,12 @@
       requestWakeLock().then(ok => { if (!ok) wakeToggle.checked = false; });
     }
   } catch {}
-
   document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState === 'visible' && wakeToggle.checked) {
       await requestWakeLock();
     }
   });
 
-  // ---------- Service worker ----------
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
