@@ -437,43 +437,58 @@
   }
   function nowMs() { return Date.now(); }
 
-  class Stopwatch {
-    constructor(key) {
-      this.key = key;
-      this.elapsedMs = 0;
-      this.running = false;
-      this.startedAtEpoch = 0;
-      this._load();
-    }
-    getElapsedMs() {
-      if (!this.running) return this.elapsedMs;
-      return this.elapsedMs + (nowMs() - this.startedAtEpoch);
-    }
-    start() {
-      if (this.running) return;
-      this.running = true;
-      this.startedAtEpoch = nowMs();
-      this._save();
-    }
-    stop() {
-      if (!this.running) return;
-      this.elapsedMs = this.getElapsedMs();
-      this.running = false;
-      this.startedAtEpoch = 0;
-      this._save();
-    }
-    reset() {
-      this.elapsedMs = 0;
-      if (this.running) this.startedAtEpoch = nowMs();
-      this._save();
-    }
-    _save() {
-      localStorage.setItem(this.key, JSON.stringify({
-        elapsedMs: this.elapsedMs,
-        running: this.running,
-        startedAtEpoch: this.startedAtEpoch
-      }));
-    }
+ class Stopwatch {
+  constructor(key) {
+    this.key = key;
+    this.elapsedMs = 0;
+    this.running = false;
+    this.startedAtEpoch = 0;
+
+    // Load saved state
+    try {
+      const raw = localStorage.getItem(this.key);
+      if (raw) {
+        const data = JSON.parse(raw);
+        this.elapsedMs = data.elapsedMs || 0;
+        this.running = false; // <-- force NOT running on load
+        this.startedAtEpoch = 0;
+      }
+    } catch {}
+  }
+
+  getElapsedMs() {
+    if (!this.running) return this.elapsedMs;
+    return this.elapsedMs + (Date.now() - this.startedAtEpoch);
+  }
+
+  start() {
+    if (this.running) return;
+    this.running = true;
+    this.startedAtEpoch = Date.now();
+    this._save();
+  }
+
+  stop() {
+    if (!this.running) return;
+    this.elapsedMs = this.getElapsedMs();
+    this.running = false;
+    this.startedAtEpoch = 0;
+    this._save();
+  }
+
+  reset() {
+    this.elapsedMs = 0;
+    this.running = false;
+    this.startedAtEpoch = 0;
+    this._save();
+  }
+
+  _save() {
+    localStorage.setItem(this.key, JSON.stringify({
+      elapsedMs: this.elapsedMs
+    }));
+  }
+}
     _load() {
       try {
         const raw = localStorage.getItem(this.key);
