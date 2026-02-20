@@ -39,39 +39,26 @@
       backdrop-filter: blur(12px);
       z-index: 10;
     }
-
-    header .title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
     header h1 {
       font-size: 16px;
       margin: 0;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: 0.2px;
     }
-
     header .subtitle {
       font-size: 12px;
       opacity: 0.7;
-      margin-left: 2px;
+      margin-top: 2px;
     }
 
-    .top-controls {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
+    .top-controls { display: flex; gap: 10px; align-items: center; }
     .chip {
       border: 1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.06);
       border-radius: 999px;
       padding: 10px 12px;
       font-size: 13px;
-      font-weight: 750;
+      font-weight: 800;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -79,17 +66,12 @@
     }
     .chip input { transform: scale(1.12); }
 
-    .wrap { padding: 16px; max-width: 860px; margin: 0 auto; }
+    .wrap { padding: 16px; max-width: 900px; margin: 0 auto; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media (min-width: 860px) {
       .grid { grid-template-columns: 1fr 1fr; }
-      .card.span-2 { grid-column: 1 / span 2; }
+      .span-2 { grid-column: 1 / span 2; }
     }
 
     .card {
@@ -101,7 +83,6 @@
       overflow: hidden;
       position: relative;
     }
-
     .card::before {
       content: "";
       position: absolute;
@@ -118,44 +99,36 @@
       margin-bottom: 8px;
       position: relative;
     }
-
-    .label .name {
+    .name {
       font-size: 13px;
-      opacity: 0.9;
-      font-weight: 850;
+      opacity: 0.92;
+      font-weight: 900;
       letter-spacing: 0.25px;
       text-transform: uppercase;
     }
-
-    .label .hint {
+    .hint {
       font-size: 12px;
       opacity: 0.7;
-      font-weight: 650;
+      font-weight: 700;
     }
 
     .time {
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.6px;
       user-select: none;
-      margin: 6px 0 10px;
+      margin: 8px 0 12px;
       position: relative;
+      font-weight: 950;
     }
-
-    /* Big, readable numbers */
-    .time.big { font-size: 72px; line-height: 1.0; font-weight: 900; }
-    .time.med { font-size: 56px; line-height: 1.03; font-weight: 900; }
-
+    .time.big { font-size: 72px; line-height: 1.0; }
+    .time.med { font-size: 54px; line-height: 1.03; }
     @media (max-width: 420px) {
       .time.big { font-size: 58px; }
-      .time.med { font-size: 46px; }
+      .time.med { font-size: 44px; }
     }
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      position: relative;
-    }
+    .controls { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; position: relative; }
+    @media (max-width: 520px) { .controls { grid-template-columns: 1fr 1fr auto; } }
 
     button {
       border: 1px solid rgba(255,255,255,0.16);
@@ -164,51 +137,34 @@
       padding: 12px 14px;
       border-radius: 14px;
       font-size: 14px;
-      font-weight: 850;
+      font-weight: 900;
       cursor: pointer;
       touch-action: manipulation;
       user-select: none;
       min-height: 46px;
     }
-
     button:active { transform: scale(0.99); }
-
     button.primary {
       background: rgba(255,255,255,0.92);
       color: #0b1020;
       border-color: rgba(255,255,255,0.92);
     }
-
-    button.ghost { background: transparent; }
-    button.danger { background: rgba(255, 70, 70, 0.16); border-color: rgba(255, 70, 70, 0.30); }
-    button.pauseall {
-      background: rgba(255, 70, 70, 0.92);
-      border-color: rgba(255, 70, 70, 0.92);
-      color: #0b1020;
+    button.pause {
+      background: rgba(255, 70, 70, 0.18);
+      border-color: rgba(255, 70, 70, 0.35);
       font-weight: 950;
-      letter-spacing: 0.4px;
     }
-
-    .split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .small {
+    button.ghost { background: transparent; }
+    button.reset {
+      padding: 10px 12px;
+      min-height: 40px;
       font-size: 12px;
-      opacity: 0.75;
-      margin-top: 8px;
-      line-height: 1.35;
-      position: relative;
+      font-weight: 850;
+      opacity: 0.9;
     }
 
-    /* Sticky “Objections Mode” bar */
-    .control-dock {
-      position: sticky;
-      bottom: 0;
-      z-index: 20;
+    /* Objections mode dock */
+    .dock {
       margin-top: 12px;
       padding: 12px;
       border-radius: 18px;
@@ -218,45 +174,49 @@
       box-shadow: 0 18px 40px rgba(0,0,0,0.45);
       display: grid;
       gap: 10px;
+      position: relative;
     }
-
     .dock-top {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       gap: 10px;
     }
-
-    .dock-title {
-      font-weight: 950;
-      letter-spacing: 0.3px;
+    .dock-title { font-weight: 950; letter-spacing: 0.3px; }
+    .dock-sub { font-size: 12px; opacity: 0.75; font-weight: 700; }
+    .dock-buttons { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    button.objection {
+      background: rgba(255, 70, 70, 0.92);
+      border-color: rgba(255, 70, 70, 0.92);
+      color: #0b1020;
+      font-weight: 980;
+      letter-spacing: 0.4px;
+      min-height: 54px;
+      font-size: 16px;
+    }
+    button.resume {
+      background: rgba(44,203,161,0.92);
+      border-color: rgba(44,203,161,0.92);
+      color: #071018;
+      font-weight: 980;
+      min-height: 54px;
+      font-size: 16px;
     }
 
-    .dock-sub {
+    .small {
       font-size: 12px;
-      opacity: 0.75;
-      font-weight: 650;
-    }
-
-    .dock-buttons {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr;
-      gap: 10px;
-    }
-
-    @media (max-width: 520px) {
-      .dock-buttons { grid-template-columns: 1fr; }
+      opacity: 0.78;
+      line-height: 1.35;
+      position: relative;
     }
   </style>
 </head>
 
 <body>
 <header>
-  <div class="title">
-    <div>
-      <h1>Mock Trial Timer</h1>
-      <div class="subtitle">Big digits. Fast pauses. No drama.</div>
-    </div>
+  <div>
+    <h1>Mock Trial Timer</h1>
+    <div class="subtitle">Objection-proof timing. Big digits. Fast control.</div>
   </div>
 
   <div class="top-controls">
@@ -264,61 +224,40 @@
       <input id="wakeToggle" type="checkbox" />
       Wake Lock
     </label>
-    <button class="ghost" id="resetAllBtn" title="Reset everything">Reset All</button>
+    <button class="ghost" id="resetAllBtn" title="Reset speech + pros + def (not round)">Reset (Speech/Side)</button>
   </div>
 </header>
 
 <div class="wrap">
 
   <div class="grid">
-    <!-- Total round time -->
-    <section class="card span-2" aria-label="Total Round Time">
-      <div class="label">
-        <div class="name">Total Round Time</div>
-        <div class="hint">Optional: run this the whole round</div>
-      </div>
-      <div class="time med" id="roundTime">00:00.0</div>
-      <div class="row">
-        <div class="split">
-          <button class="primary" id="roundStartStop">Start</button>
-          <button class="ghost" id="roundReset">Reset</button>
-        </div>
-      </div>
-      <div class="small">Tip: hit Start at “Ready?” and Pause All during objections to keep totals honest.</div>
-    </section>
 
-    <!-- Current speech -->
+    <!-- Current Speech -->
     <section class="card span-2" aria-label="Current Speech">
       <div class="label">
         <div class="name">Current Speech</div>
-        <div class="hint">Start/stop each speech</div>
+        <div class="hint" id="speechHint">Stopped</div>
       </div>
       <div class="time big" id="speechTime">00:00.0</div>
-      <div class="row">
-        <div class="split">
-          <button class="primary" id="speechStartStop">Start</button>
-          <button class="ghost" id="speechReset">Reset</button>
-        </div>
-        <button id="addToPros">Add speech → Prosecution Total</button>
-        <button id="addToDef">Add speech → Defense Total</button>
+      <div class="controls">
+        <button class="primary" id="speechStart">Start</button>
+        <button class="pause" id="speechPause">Pause</button>
+        <button class="reset" id="speechReset">Reset</button>
       </div>
-      <div class="small">
-        Use the big <b>Pause All</b> button for objections. It pauses every timer at once.
-      </div>
+      <div class="small">Objections Mode pauses/resumes the timers that were actually running (round time never pauses).</div>
     </section>
 
     <!-- Prosecution -->
     <section class="card" aria-label="Prosecution Total Time">
       <div class="label">
         <div class="name">Prosecution Total Time</div>
-        <div class="hint">Cumulative</div>
+        <div class="hint" id="prosHint">Stopped</div>
       </div>
       <div class="time med" id="prosTime">00:00.0</div>
-      <div class="row">
-        <div class="split">
-          <button class="primary" id="prosStartStop">Start</button>
-          <button class="ghost" id="prosReset">Reset</button>
-        </div>
+      <div class="controls">
+        <button class="primary" id="prosStart">Start</button>
+        <button class="pause" id="prosPause">Pause</button>
+        <button class="reset" id="prosReset">Reset</button>
       </div>
     </section>
 
@@ -326,39 +265,51 @@
     <section class="card" aria-label="Defense Total Time">
       <div class="label">
         <div class="name">Defense Total Time</div>
-        <div class="hint">Cumulative</div>
+        <div class="hint" id="defHint">Stopped</div>
       </div>
       <div class="time med" id="defTime">00:00.0</div>
-      <div class="row">
-        <div class="split">
-          <button class="primary" id="defStartStop">Start</button>
-          <button class="ghost" id="defReset">Reset</button>
-        </div>
+      <div class="controls">
+        <button class="primary" id="defStart">Start</button>
+        <button class="pause" id="defPause">Pause</button>
+        <button class="reset" id="defReset">Reset</button>
       </div>
     </section>
-  </div>
 
-  <!-- Sticky objections / global controls -->
-  <div class="control-dock" aria-label="Global Controls">
-    <div class="dock-top">
-      <div>
-        <div class="dock-title">Objections Mode</div>
-        <div class="dock-sub">One tap to pause everything.</div>
+    <!-- Objections Mode -->
+    <section class="dock span-2" aria-label="Objections Mode">
+      <div class="dock-top">
+        <div>
+          <div class="dock-title">Objections Mode</div>
+          <div class="dock-sub">Pauses current timers. Resumes only the last running set.</div>
+        </div>
+        <div class="dock-sub" id="runningIndicator">All stopped</div>
       </div>
-      <div class="dock-sub" id="runningIndicator">All stopped</div>
-    </div>
 
-    <div class="dock-buttons">
-      <button class="pauseall" id="pauseAllBtn">PAUSE ALL</button>
-      <button class="primary" id="resumeAllBtn">Resume All</button>
-      <button class="danger" id="stopAllBtn" title="Stop everything (does not reset)">Stop All</button>
-    </div>
+      <div class="dock-buttons">
+        <button class="objection" id="objectionPause">Pause current speeches</button>
+        <button class="resume" id="objectionResume">Resume current speeches</button>
+      </div>
 
-    <div class="small">
-      Recommended: keep <b>Round Time</b> running during argument, and use <b>Pause All</b> whenever an objection interrupts flow.
-    </div>
+      <div class="small">
+        Rule: Prosecution and Defense totals can’t run at the same time. Starting one automatically pauses the other.
+      </div>
+    </section>
+
+    <!-- Total Round Time (BOTTOM, unaffected by objections) -->
+    <section class="card span-2" aria-label="Total Round Time">
+      <div class="label">
+        <div class="name">Total Round Time</div>
+        <div class="hint" id="roundHint">Stopped</div>
+      </div>
+      <div class="time med" id="roundTime">00:00.0</div>
+      <div class="controls" style="grid-template-columns: 1fr auto;">
+        <button class="primary" id="roundStart">Start</button>
+        <button class="reset" id="roundReset">Reset</button>
+      </div>
+      <div class="small">This timer is never paused by Objections Mode. It’s your “real-world” round clock.</div>
+    </section>
+
   </div>
-
 </div>
 
 <script>
@@ -375,7 +326,7 @@
     return `${mm}:${ss}.${tenths}`;
   }
 
-  // --- Stopwatch (battery-friendly: updates only while running) ---
+  // --- Stopwatch (battery-friendly: ticks only while running) ---
   class Stopwatch {
     constructor(key, onUpdate) {
       this.key = key;
@@ -415,8 +366,6 @@
       this.save();
     }
 
-    toggle() { this.running ? this.stop() : this.start(); }
-
     reset() {
       this.elapsed = 0;
       if (this.running) this._t0 = performance.now();
@@ -424,16 +373,11 @@
       this.save();
     }
 
-    add(ms) {
-      this.elapsed += ms;
-      if (this.running) this._t0 = performance.now();
-      this.onUpdate(this.getElapsed());
-      this.save();
-    }
-
     save() {
-      const payload = { elapsed: this.elapsed, running: this.running };
-      localStorage.setItem(this.key, JSON.stringify(payload));
+      localStorage.setItem(this.key, JSON.stringify({
+        elapsed: this.elapsed,
+        running: this.running
+      }));
     }
 
     load() {
@@ -444,7 +388,6 @@
         this.elapsed = payload.elapsed || 0;
         this.running = !!payload.running;
         if (this.running) {
-          // Resume conservatively: keep running but reset t0 to now.
           this._t0 = performance.now();
           this._timer = setInterval(() => {
             this.onUpdate(this.getElapsed());
@@ -462,129 +405,116 @@
       if (!('wakeLock' in navigator)) return false;
       wakeLock = await navigator.wakeLock.request('screen');
       return true;
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
   async function releaseWakeLock() {
     try { if (wakeLock) await wakeLock.release(); } catch {}
     wakeLock = null;
   }
 
-  // --- Bind UI ---
+  // --- UI elements ---
   const speechTimeEl = document.getElementById('speechTime');
   const prosTimeEl = document.getElementById('prosTime');
   const defTimeEl = document.getElementById('defTime');
   const roundTimeEl = document.getElementById('roundTime');
 
-  const speechBtn = document.getElementById('speechStartStop');
-  const prosBtn = document.getElementById('prosStartStop');
-  const defBtn = document.getElementById('defStartStop');
-  const roundBtn = document.getElementById('roundStartStop');
+  const speechHint = document.getElementById('speechHint');
+  const prosHint = document.getElementById('prosHint');
+  const defHint = document.getElementById('defHint');
+  const roundHint = document.getElementById('roundHint');
+  const runningIndicator = document.getElementById('runningIndicator');
 
-  function setBtn(btn, running) { btn.textContent = running ? 'Stop' : 'Start'; }
-
+  // --- Timers ---
   const speech = new Stopwatch('mt_speech', (ms) => {
     speechTimeEl.textContent = formatMs(ms);
-    setBtn(speechBtn, speech.running);
-    updateRunningIndicator();
+    speechHint.textContent = speech.running ? 'Running' : 'Stopped';
+    updateIndicator();
   });
 
   const pros = new Stopwatch('mt_pros', (ms) => {
     prosTimeEl.textContent = formatMs(ms);
-    setBtn(prosBtn, pros.running);
-    updateRunningIndicator();
+    prosHint.textContent = pros.running ? 'Running' : 'Stopped';
+    updateIndicator();
   });
 
   const def = new Stopwatch('mt_def', (ms) => {
     defTimeEl.textContent = formatMs(ms);
-    setBtn(defBtn, def.running);
-    updateRunningIndicator();
+    defHint.textContent = def.running ? 'Running' : 'Stopped';
+    updateIndicator();
   });
 
   const round = new Stopwatch('mt_round', (ms) => {
     roundTimeEl.textContent = formatMs(ms);
-    setBtn(roundBtn, round.running);
-    updateRunningIndicator();
+    roundHint.textContent = round.running ? 'Running' : 'Stopped';
+    updateIndicator();
   });
 
-  // Individual start/stop
-  speechBtn.addEventListener('click', () => speech.toggle());
-  prosBtn.addEventListener('click', () => pros.toggle());
-  defBtn.addEventListener('click', () => def.toggle());
-  roundBtn.addEventListener('click', () => round.toggle());
-
-  // Individual resets
-  document.getElementById('speechReset').addEventListener('click', () => speech.reset());
-  document.getElementById('prosReset').addEventListener('click', () => pros.reset());
-  document.getElementById('defReset').addEventListener('click', () => def.reset());
-  document.getElementById('roundReset').addEventListener('click', () => round.reset());
-
-  // Add speech elapsed into totals (segment-add workflow)
-  document.getElementById('addToPros').addEventListener('click', () => {
-    const ms = speech.getElapsed();
-    pros.add(ms);
-    speech.reset();
-  });
-
-  document.getElementById('addToDef').addEventListener('click', () => {
-    const ms = speech.getElapsed();
-    def.add(ms);
-    speech.reset();
-  });
-
-  // Reset all
-  document.getElementById('resetAllBtn').addEventListener('click', () => {
-    speech.reset(); pros.reset(); def.reset(); round.reset();
-  });
-
-  // Global controls: PAUSE/RESUME/STOP ALL
-  const pauseAllBtn = document.getElementById('pauseAllBtn');
-  const resumeAllBtn = document.getElementById('resumeAllBtn');
-  const stopAllBtn = document.getElementById('stopAllBtn');
-
-  // Track what was running before pause so Resume All is smart.
-  let lastRunningSnapshot = { speech: false, pros: false, def: false, round: false };
-
-  function snapshotRunning() {
-    lastRunningSnapshot = {
-      speech: speech.running,
-      pros: pros.running,
-      def: def.running,
-      round: round.running
-    };
+  // --- Mutual exclusion: pros/def never run together ---
+  function startPros() {
+    if (def.running) def.stop();
+    pros.start();
+  }
+  function startDef() {
+    if (pros.running) pros.stop();
+    def.start();
   }
 
-  function pauseAll() {
-    snapshotRunning();
+  // --- Buttons: speech ---
+  document.getElementById('speechStart').addEventListener('click', () => speech.start());
+  document.getElementById('speechPause').addEventListener('click', () => speech.stop());
+  document.getElementById('speechReset').addEventListener('click', () => speech.reset());
+
+  // --- Buttons: pros ---
+  document.getElementById('prosStart').addEventListener('click', startPros);
+  document.getElementById('prosPause').addEventListener('click', () => pros.stop());
+  document.getElementById('prosReset').addEventListener('click', () => pros.reset());
+
+  // --- Buttons: def ---
+  document.getElementById('defStart').addEventListener('click', startDef);
+  document.getElementById('defPause').addEventListener('click', () => def.stop());
+  document.getElementById('defReset').addEventListener('click', () => def.reset());
+
+  // --- Buttons: round (unaffected by objections mode) ---
+  document.getElementById('roundStart').addEventListener('click', () => round.start());
+  document.getElementById('roundReset').addEventListener('click', () => round.reset());
+
+  // --- Reset all (speech + pros + def only) ---
+  document.getElementById('resetAllBtn').addEventListener('click', () => {
+    speech.reset();
+    pros.reset();
+    def.reset();
+  });
+
+  // --- Objections Mode: pause the currently running set; resume ONLY that same set ---
+  let pausedSet = { speech: false, pros: false, def: false };
+
+  function pauseCurrentSpeeches() {
+    pausedSet = {
+      speech: speech.running,
+      pros: pros.running,
+      def: def.running
+    };
+    // Pause only these timers (round never touched)
     speech.stop();
     pros.stop();
     def.stop();
-    round.stop();
   }
 
-  function resumeAll() {
-    // Resume only what was running when you hit Pause All.
-    if (lastRunningSnapshot.speech) speech.start();
-    if (lastRunningSnapshot.pros) pros.start();
-    if (lastRunningSnapshot.def) def.start();
-    if (lastRunningSnapshot.round) round.start();
+  function resumeCurrentSpeeches() {
+    // Resume only what was running when you hit pause.
+    if (pausedSet.speech) speech.start();
+    if (pausedSet.pros) startPros();   // enforces mutual exclusion
+    if (pausedSet.def) startDef();     // enforces mutual exclusion
+
+    // Clear so you don’t accidentally resume twice later
+    pausedSet = { speech: false, pros: false, def: false };
   }
 
-  function stopAll() {
-    // Stops everything but does not reset.
-    speech.stop(); pros.stop(); def.stop(); round.stop();
-    // Also clear snapshot so Resume All doesn't surprise you.
-    lastRunningSnapshot = { speech: false, pros: false, def: false, round: false };
-  }
+  document.getElementById('objectionPause').addEventListener('click', pauseCurrentSpeeches);
+  document.getElementById('objectionResume').addEventListener('click', resumeCurrentSpeeches);
 
-  pauseAllBtn.addEventListener('click', pauseAll);
-  resumeAllBtn.addEventListener('click', resumeAll);
-  stopAllBtn.addEventListener('click', stopAll);
-
-  // Running indicator in dock
-  const runningIndicator = document.getElementById('runningIndicator');
-  function updateRunningIndicator() {
+  // --- Indicator ---
+  function updateIndicator() {
     const running = [];
     if (speech.running) running.push('Speech');
     if (pros.running) running.push('Pros');
@@ -592,9 +522,9 @@
     if (round.running) running.push('Round');
     runningIndicator.textContent = running.length ? `Running: ${running.join(', ')}` : 'All stopped';
   }
-  updateRunningIndicator();
+  updateIndicator();
 
-  // Wake lock toggle
+  // --- Wake lock ---
   const wakeToggle = document.getElementById('wakeToggle');
   wakeToggle.addEventListener('change', async () => {
     if (wakeToggle.checked) {
@@ -606,7 +536,6 @@
     localStorage.setItem('mt_wake', JSON.stringify({ enabled: wakeToggle.checked }));
   });
 
-  // Restore wake lock state
   try {
     const s = JSON.parse(localStorage.getItem('mt_wake') || '{}');
     if (s.enabled) {
@@ -621,7 +550,7 @@
     }
   });
 
-  // Register service worker
+  // --- Service worker ---
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
