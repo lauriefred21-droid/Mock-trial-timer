@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f1220" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -11,8 +11,9 @@
 
   <style>
     :root { color-scheme: dark; }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+    html, body { height: 100%; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -24,18 +25,20 @@
       color:#f3f4f6;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      touch-action: manipulation;
     }
 
     header{
-      padding:14px 16px;
+      padding:14px 16px calc(12px + env(safe-area-inset-top));
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       border-bottom:1px solid rgba(255,255,255,0.08);
       position:sticky;
       top:0;
-      background: rgba(7,8,20,0.6);
+      background: rgba(7,8,20,0.65);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index:10;
       gap: 12px;
     }
@@ -98,7 +101,11 @@
     }
     .roleopt input { transform: scale(1.12); }
 
-    .wrap{ padding:16px; max-width:900px; margin:0 auto; }
+    .wrap{
+      padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+      max-width:900px;
+      margin:0 auto;
+    }
 
     .grid{ display:grid; grid-template-columns:1fr; gap:12px; }
     @media (min-width:860px){
@@ -171,11 +178,11 @@
       font-size:14px;
       font-weight:950;
       cursor:pointer;
-      touch-action: manipulation;
       user-select:none;
-      min-height:46px;
+      min-height:48px; /* iPhone-friendly target */
     }
     button:active{ transform: scale(0.99); }
+
     button.primary{
       background: rgba(255,255,255,0.92);
       color:#0b1020;
@@ -188,12 +195,11 @@
     }
     button.reset{
       padding:10px 12px;
-      min-height:40px;
+      min-height:44px;
       font-size:12px;
       font-weight:850;
-      opacity:.9;
+      opacity:.92;
     }
-    button.ghost{ background: transparent; }
 
     .dock{
       margin-top:12px;
@@ -202,6 +208,7 @@
       border:1px solid rgba(255,255,255,0.12);
       background: rgba(7,8,20,0.55);
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       box-shadow: 0 18px 40px rgba(0,0,0,0.45);
       display:grid;
       gap:10px;
@@ -223,19 +230,78 @@
       color:#0b1020;
       font-weight:990;
       letter-spacing:.4px;
-      min-height:54px;
+      min-height:56px;
       font-size:16px;
     }
     button.resume{
+      background: rgba(44,203,161,0.72);
+      border-color: rgba(44,203,161,0.72);
+      color:#071018;
+      font-weight:990;
+      min-height:56px;
+      font-size:16px;
+    }
+
+    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width:520px){ .row2{ grid-template-columns:1fr; } }
+
+    button.endround{
+      background: rgba(255, 181, 72, 0.92);
+      border-color: rgba(255, 181, 72, 0.92);
+      color:#0b1020;
+      font-weight:990;
+      letter-spacing:.3px;
+      min-height:52px;
+    }
+    button.resetall{
       background: rgba(44,203,161,0.92);
       border-color: rgba(44,203,161,0.92);
       color:#071018;
       font-weight:990;
-      min-height:54px;
-      font-size:16px;
+      letter-spacing:.3px;
+      min-height:52px;
+    }
+    button.export{
+      background: rgba(255,255,255,0.92);
+      border-color: rgba(255,255,255,0.92);
+      color:#0b1020;
+      font-weight:980;
+      min-height:46px;
     }
 
     .small{ font-size:12px; opacity:.78; line-height:1.35; position:relative; }
+
+    .log{
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
+    .loglist{
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .logitem{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      font-variant-numeric: tabular-nums;
+      font-weight: 850;
+      align-items: baseline;
+    }
+    .logitem .meta{
+      opacity: .8;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 
@@ -243,7 +309,7 @@
 <header>
   <div>
     <h1>Mock Trial Timer</h1>
-    <div class="subtitle">Speech + side sync. Objection-proof controls.</div>
+    <div class="subtitle">True-time clocks. Speech log. iPhone-friendly.</div>
   </div>
 
   <div class="top-controls">
@@ -259,8 +325,6 @@
       <input id="wakeToggle" type="checkbox" />
       Wake Lock
     </label>
-
-    <button class="ghost" id="resetAllBtn" title="Reset speech + pros + def (not round)">Reset (Speech/Side)</button>
   </div>
 </header>
 
@@ -273,14 +337,14 @@
         <div class="name">Current Speech</div>
         <div class="hint" id="speechHint">Stopped</div>
       </div>
-      <div class="time big" id="speechTime">00:00.0</div>
+      <div class="time big" id="speechTime">00:00</div>
       <div class="controls">
         <button class="primary" id="speechStart">Start</button>
         <button class="pause" id="speechPause">Pause</button>
         <button class="reset" id="speechReset">Reset</button>
       </div>
       <div class="small">
-        If you pick a side above, Speech Start/Pause also starts/pauses your side total. (Pros/Def totals never run together.)
+        Speech Start/Pause syncs to your selected side. Speech lengths log on Speech Reset or End Round.
       </div>
     </section>
 
@@ -290,7 +354,7 @@
         <div class="name">Prosecution Total Time</div>
         <div class="hint" id="prosHint">Stopped</div>
       </div>
-      <div class="time med" id="prosTime">00:00.0</div>
+      <div class="time med" id="prosTime">00:00</div>
       <div class="controls">
         <button class="primary" id="prosStart">Start</button>
         <button class="pause" id="prosPause">Pause</button>
@@ -304,7 +368,7 @@
         <div class="name">Defense Total Time</div>
         <div class="hint" id="defHint">Stopped</div>
       </div>
-      <div class="time med" id="defTime">00:00.0</div>
+      <div class="time med" id="defTime">00:00</div>
       <div class="controls">
         <button class="primary" id="defStart">Start</button>
         <button class="pause" id="defPause">Pause</button>
@@ -317,7 +381,7 @@
       <div class="dock-top">
         <div>
           <div class="dock-title">Objections Mode</div>
-          <div class="dock-sub">Pauses the current running set. Resumes only that set.</div>
+          <div class="dock-sub">Pauses current set. Resumes only that set. Round time unaffected.</div>
         </div>
         <div class="dock-sub" id="runningIndicator">All stopped</div>
       </div>
@@ -327,23 +391,43 @@
         <button class="resume" id="objectionResume">Resume current speeches</button>
       </div>
 
+      <div class="row2">
+        <button class="endround" id="endRoundBtn">End Round (save speech log)</button>
+        <button class="resetall" id="resetEverythingBtn">Reset Everything</button>
+      </div>
+
       <div class="small">
-        Total Round Time never pauses here. This only touches Speech + whichever side was running.
+        Reset Everything clears all timers and clears the speech log.
       </div>
     </section>
 
-    <!-- Total Round Time (BOTTOM, unaffected by objections) -->
+    <!-- Total Round Time (BOTTOM) -->
     <section class="card span-2" aria-label="Total Round Time">
       <div class="label">
         <div class="name">Total Round Time</div>
         <div class="hint" id="roundHint">Stopped</div>
       </div>
-      <div class="time med" id="roundTime">00:00.0</div>
-      <div class="controls" style="grid-template-columns: 1fr auto;">
+      <div class="time med" id="roundTime">00:00</div>
+      <div class="controls">
         <button class="primary" id="roundStart">Start</button>
+        <button class="pause" id="roundPause">Pause</button>
         <button class="reset" id="roundReset">Reset</button>
       </div>
-      <div class="small">This is your “real-world” clock. It never stops for objections.</div>
+
+      <div class="log" aria-label="Speech Log">
+        <div class="label" style="margin-top:6px;">
+          <div class="name">Speech Log</div>
+          <div class="hint" id="logHint">No speeches saved yet</div>
+        </div>
+
+        <div class="controls" style="grid-template-columns: 1fr auto;">
+          <button class="export" id="exportLogBtn">Export Log</button>
+          <button class="reset" id="clearLogBtn">Clear Log</button>
+        </div>
+
+        <ul class="loglist" id="logList"></ul>
+        <div class="small">Export copies a plain-text log to your clipboard.</div>
+      </div>
     </section>
 
   </div>
@@ -351,74 +435,58 @@
 
 <script>
   // ---------- Formatting ----------
-  function formatMs(ms) {
+  function formatMsToMMSS(ms) {
     ms = Math.max(0, ms);
-    const tenthsTotal = Math.floor(ms / 100);
-    const tenths = tenthsTotal % 10;
-    const secondsTotal = Math.floor(tenthsTotal / 10);
-    const seconds = secondsTotal % 60;
-    const minutes = Math.floor(secondsTotal / 60);
-    return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}.${tenths}`;
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
   }
+  function nowMs() { return Date.now(); }
 
-  // ---------- Stopwatch ----------
+  // ---------- Stopwatch: true-time based on epoch ----------
   class Stopwatch {
     constructor(key) {
       this.key = key;
-      this.elapsed = 0;       // ms
+      this.elapsedMs = 0;
       this.running = false;
-      this._t0 = 0;
-      this._timer = null;
-      this._onTick = () => {};
-
+      this.startedAtEpoch = 0;
       this._load();
-      if (this.running) this._resumeTicker();
     }
 
-    onTick(fn) {
-      this._onTick = fn;
-      this._onTick(this.getElapsed());
-    }
-
-    getElapsed() {
-      return this.running ? this.elapsed + (performance.now() - this._t0) : this.elapsed;
-    }
-
-    _resumeTicker() {
-      this._t0 = performance.now();
-      this._timer = setInterval(() => {
-        this._onTick(this.getElapsed());
-        this._save();
-      }, 200); // 5x/sec
+    getElapsedMs() {
+      if (!this.running) return this.elapsedMs;
+      // True elapsed regardless of render cadence
+      return this.elapsedMs + (nowMs() - this.startedAtEpoch);
     }
 
     start() {
       if (this.running) return;
       this.running = true;
-      this._resumeTicker();
+      this.startedAtEpoch = nowMs();
       this._save();
-      this._onTick(this.getElapsed());
     }
 
     stop() {
       if (!this.running) return;
-      this.elapsed = this.getElapsed();
+      this.elapsedMs = this.getElapsedMs();
       this.running = false;
-      clearInterval(this._timer);
-      this._timer = null;
+      this.startedAtEpoch = 0;
       this._save();
-      this._onTick(this.elapsed);
     }
 
     reset() {
-      this.elapsed = 0;
-      if (this.running) this._t0 = performance.now();
+      this.elapsedMs = 0;
+      if (this.running) this.startedAtEpoch = nowMs();
       this._save();
-      this._onTick(this.getElapsed());
     }
 
     _save() {
-      localStorage.setItem(this.key, JSON.stringify({ elapsed: this.elapsed, running: this.running }));
+      localStorage.setItem(this.key, JSON.stringify({
+        elapsedMs: this.elapsedMs,
+        running: this.running,
+        startedAtEpoch: this.startedAtEpoch
+      }));
     }
 
     _load() {
@@ -426,8 +494,9 @@
         const raw = localStorage.getItem(this.key);
         if (!raw) return;
         const data = JSON.parse(raw);
-        this.elapsed = data.elapsed || 0;
+        this.elapsedMs = data.elapsedMs || 0;
         this.running = !!data.running;
+        this.startedAtEpoch = data.startedAtEpoch || 0;
       } catch {}
     }
   }
@@ -438,7 +507,7 @@
   const def    = new Stopwatch('mt_def');
   const round  = new Stopwatch('mt_round');
 
-  // ---------- Role selection (persisted) ----------
+  // ---------- Role (never auto-changed) ----------
   const rolePros = document.getElementById('rolePros');
   const roleDef  = document.getElementById('roleDef');
 
@@ -459,6 +528,30 @@
   rolePros.addEventListener('change', () => { if (rolePros.checked) setRole('pros'); });
   roleDef.addEventListener('change', () => { if (roleDef.checked) setRole('def'); });
 
+  // ---------- Speech log ----------
+  function loadSpeechLog() {
+    try { return JSON.parse(localStorage.getItem('mt_speech_log') || '[]'); }
+    catch { return []; }
+  }
+  function saveSpeechLog(log) {
+    localStorage.setItem('mt_speech_log', JSON.stringify(log));
+  }
+  let speechLog = loadSpeechLog(); // {seconds, role, at, reason}
+
+  function maybeLogCurrentSpeech(reason) {
+    const ms = speech.getElapsedMs();
+    if (ms < 1000) return false; // ignore tiny
+    const seconds = Math.floor(ms / 1000);
+    speechLog.push({
+      seconds,
+      role: getRole() || 'unselected',
+      at: new Date().toISOString(),
+      reason
+    });
+    saveSpeechLog(speechLog);
+    return true;
+  }
+
   // ---------- UI refs ----------
   const speechTimeEl = document.getElementById('speechTime');
   const prosTimeEl   = document.getElementById('prosTime');
@@ -472,17 +565,19 @@
 
   const runningIndicator = document.getElementById('runningIndicator');
 
+  const logList = document.getElementById('logList');
+  const logHint = document.getElementById('logHint');
+
   // ---------- Mutual exclusion: pros/def never run together ----------
   function startPros() { if (def.running) def.stop(); pros.start(); }
   function startDef()  { if (pros.running) pros.stop(); def.start(); }
 
-  // ---------- Rendering ----------
-  let rafQueued = false;
+  // ---------- Render (lightweight) ----------
   function render() {
-    speechTimeEl.textContent = formatMs(speech.getElapsed());
-    prosTimeEl.textContent   = formatMs(pros.getElapsed());
-    defTimeEl.textContent    = formatMs(def.getElapsed());
-    roundTimeEl.textContent  = formatMs(round.getElapsed());
+    speechTimeEl.textContent = formatMsToMMSS(speech.getElapsedMs());
+    prosTimeEl.textContent   = formatMsToMMSS(pros.getElapsedMs());
+    defTimeEl.textContent    = formatMsToMMSS(def.getElapsedMs());
+    roundTimeEl.textContent  = formatMsToMMSS(round.getElapsedMs());
 
     speechHint.textContent = speech.running ? 'Running' : 'Stopped';
     prosHint.textContent   = pros.running   ? 'Running' : 'Stopped';
@@ -495,23 +590,13 @@
     if (def.running)    running.push('Def');
     if (round.running)  running.push('Round');
     runningIndicator.textContent = running.length ? `Running: ${running.join(', ')}` : 'All stopped';
-
-    rafQueued = false;
   }
 
-  // Tick callbacks: schedule renders without spamming
-  function scheduleRender() {
-    if (rafQueued) return;
-    rafQueued = true;
-    requestAnimationFrame(render);
-  }
-  speech.onTick(scheduleRender);
-  pros.onTick(scheduleRender);
-  def.onTick(scheduleRender);
-  round.onTick(scheduleRender);
+  // UI refresh cadence (accuracy is independent of this)
+  setInterval(render, 250);
   render();
 
-  // ---------- Speech controls (with role sync) ----------
+  // ---------- Speech controls with role sync ----------
   function speechStartSynced() {
     speech.start();
     const r = getRole();
@@ -528,9 +613,13 @@
 
   document.getElementById('speechStart').addEventListener('click', speechStartSynced);
   document.getElementById('speechPause').addEventListener('click', speechPauseSynced);
-  document.getElementById('speechReset').addEventListener('click', () => speech.reset());
+  document.getElementById('speechReset').addEventListener('click', () => {
+    // Log then reset
+    maybeLogCurrentSpeech('speech_reset');
+    speech.reset();
+  });
 
-  // ---------- Side controls (manual, still enforce mutual exclusion) ----------
+  // ---------- Side controls (manual; still enforce mutual exclusion) ----------
   document.getElementById('prosStart').addEventListener('click', startPros);
   document.getElementById('prosPause').addEventListener('click', () => pros.stop());
   document.getElementById('prosReset').addEventListener('click', () => pros.reset());
@@ -539,18 +628,12 @@
   document.getElementById('defPause').addEventListener('click', () => def.stop());
   document.getElementById('defReset').addEventListener('click', () => def.reset());
 
-  // ---------- Round controls (never paused by objections mode) ----------
+  // ---------- Round controls (manual pause option) ----------
   document.getElementById('roundStart').addEventListener('click', () => round.start());
+  document.getElementById('roundPause').addEventListener('click', () => round.stop());
   document.getElementById('roundReset').addEventListener('click', () => round.reset());
 
-  // ---------- Reset (speech + sides only) ----------
-  document.getElementById('resetAllBtn').addEventListener('click', () => {
-    speech.reset();
-    pros.reset();
-    def.reset();
-  });
-
-  // ---------- Objections Mode (pause/resume only the running set) ----------
+  // ---------- Objections Mode (pause/resume only the running set, NOT round) ----------
   let pausedSet = { speech: false, pros: false, def: false };
 
   function objectionPause() {
@@ -573,6 +656,102 @@
 
   document.getElementById('objectionPause').addEventListener('click', objectionPause);
   document.getElementById('objectionResume').addEventListener('click', objectionResume);
+
+  // ---------- End Round / Reset Everything ----------
+  function endRound() {
+    // Log current speech if it has time
+    maybeLogCurrentSpeech('end_round');
+
+    // Stop all timers
+    speech.stop();
+    pros.stop();
+    def.stop();
+    round.stop();
+
+    // Update log UI
+    renderLog();
+  }
+
+  function resetEverything() {
+    // Stop first (avoids weirdness)
+    speech.stop(); pros.stop(); def.stop(); round.stop();
+
+    // Reset timers
+    speech.reset(); pros.reset(); def.reset(); round.reset();
+
+    // Clear speech log
+    speechLog = [];
+    saveSpeechLog(speechLog);
+    renderLog();
+    render();
+  }
+
+  document.getElementById('endRoundBtn').addEventListener('click', endRound);
+  document.getElementById('resetEverythingBtn').addEventListener('click', resetEverything);
+
+  // ---------- Log UI + Export ----------
+  function renderLog() {
+    logList.innerHTML = '';
+    if (!speechLog.length) {
+      logHint.textContent = 'No speeches saved yet';
+      return;
+    }
+    logHint.textContent = `${speechLog.length} speech${speechLog.length === 1 ? '' : 'es'} saved`;
+
+    speechLog.forEach((item, idx) => {
+      const li = document.createElement('li');
+      li.className = 'logitem';
+
+      const left = document.createElement('div');
+      left.innerHTML = `<div class="meta">Speech ${idx+1} • ${item.role}</div>`;
+
+      const right = document.createElement('div');
+      right.textContent = formatMsToMMSS(item.seconds * 1000);
+
+      li.appendChild(left);
+      li.appendChild(right);
+      logList.appendChild(li);
+    });
+  }
+
+  function buildExportText() {
+    const lines = [];
+    lines.push('Mock Trial Speech Log');
+    lines.push(`Exported: ${new Date().toLocaleString()}`);
+    lines.push('');
+    if (!speechLog.length) {
+      lines.push('(No speeches logged)');
+      return lines.join('\n');
+    }
+    speechLog.forEach((item, i) => {
+      lines.push(`${i+1}. ${item.role} — ${formatMsToMMSS(item.seconds*1000)}`);
+    });
+    lines.push('');
+    const totalSpeechSeconds = speechLog.reduce((a,b)=>a+b.seconds,0);
+    lines.push(`Total speech time logged: ${formatMsToMMSS(totalSpeechSeconds*1000)}`);
+    return lines.join('\n');
+  }
+
+  async function exportLog() {
+    const text = buildExportText();
+    try {
+      await navigator.clipboard.writeText(text);
+      logHint.textContent = `Copied to clipboard ✓ (${speechLog.length} speeches)`;
+    } catch {
+      // iOS Safari can be picky; fallback prompt
+      window.prompt('Copy this log:', text);
+    }
+  }
+
+  document.getElementById('exportLogBtn').addEventListener('click', exportLog);
+  document.getElementById('clearLogBtn').addEventListener('click', () => {
+    speechLog = [];
+    saveSpeechLog(speechLog);
+    renderLog();
+  });
+
+  // Initial log render
+  renderLog();
 
   // ---------- Wake Lock ----------
   let wakeLock = null;
