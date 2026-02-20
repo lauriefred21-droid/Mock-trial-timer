@@ -12,8 +12,8 @@
   <style>
     :root { color-scheme: dark; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
     html, body { height: 100%; }
+
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -306,7 +306,7 @@
 <header>
   <div>
     <h1>Mock Trial Timer</h1>
-    <div class="subtitle">True-time clocks. Speech log. iPhone-friendly.</div>
+    <div class="subtitle">Manual start. Accurate time. No ghosts.</div>
   </div>
 
   <div class="top-controls">
@@ -330,7 +330,6 @@
 <div class="wrap">
   <div class="grid">
 
-    <!-- Current Speech -->
     <section class="card span-2" aria-label="Current Speech">
       <div class="label">
         <div class="name">Current Speech</div>
@@ -342,12 +341,9 @@
         <button class="pause" id="speechPause">Pause</button>
         <button class="reset" id="speechReset">Reset</button>
       </div>
-      <div class="small">
-        Speech Start/Pause syncs to your selected side. Speech lengths log on Speech Reset or End Round.
-      </div>
+      <div class="small">Speech Start/Pause syncs to your selected side. Speeches log on Speech Reset or End Round.</div>
     </section>
 
-    <!-- Prosecution -->
     <section class="card" aria-label="Prosecution Total Time">
       <div class="label">
         <div class="name">Prosecution Total Time</div>
@@ -361,7 +357,6 @@
       </div>
     </section>
 
-    <!-- Defense -->
     <section class="card" aria-label="Defense Total Time">
       <div class="label">
         <div class="name">Defense Total Time</div>
@@ -375,7 +370,6 @@
       </div>
     </section>
 
-    <!-- Objections Mode -->
     <section class="dock span-2" aria-label="Objections Mode">
       <div class="dock-top">
         <div>
@@ -391,7 +385,6 @@
       </div>
     </section>
 
-    <!-- Total Round Time (BOTTOM) + End Round moved here -->
     <section class="card span-2" aria-label="Total Round Time">
       <div class="label">
         <div class="name">Total Round Time</div>
@@ -428,6 +421,7 @@
 </div>
 
 <script>
+  // ---------- Helpers ----------
   function formatMsToMMSS(ms) {
     ms = Math.max(0, ms);
     const totalSeconds = Math.floor(ms / 1000);
@@ -435,79 +429,74 @@
     const seconds = totalSeconds % 60;
     return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
   }
-  function nowMs() { return Date.now(); }
 
- class Stopwatch {
-  constructor(key) {
-    this.key = key;
-    this.elapsedMs = 0;
-    this.running = false;
-    this.startedAtEpoch = 0;
+  // ---------- Stopwatch (accurate; never auto-runs after refresh) ----------
+  class Stopwatch {
+    constructor(key) {
+      this.key = key;
+      this.elapsedMs = 0;
+      this.running = false;
+      this.startedAtEpoch = 0;
+      this._loadElapsedOnly();
+    }
 
-    // Load saved state
-    try {
-      const raw = localStorage.getItem(this.key);
-      if (raw) {
-        const data = JSON.parse(raw);
-        this.elapsedMs = data.elapsedMs || 0;
-        this.running = false; // <-- force NOT running on load
-        this.startedAtEpoch = 0;
-      }
-    } catch {}
-  }
-
-  getElapsedMs() {
-    if (!this.running) return this.elapsedMs;
-    return this.elapsedMs + (Date.now() - this.startedAtEpoch);
-  }
-
-  start() {
-    if (this.running) return;
-    this.running = true;
-    this.startedAtEpoch = Date.now();
-    this._save();
-  }
-
-  stop() {
-    if (!this.running) return;
-    this.elapsedMs = this.getElapsedMs();
-    this.running = false;
-    this.startedAtEpoch = 0;
-    this._save();
-  }
-
-  reset() {
-    this.elapsedMs = 0;
-    this.running = false;
-    this.startedAtEpoch = 0;
-    this._save();
-  }
-
-  _save() {
-    localStorage.setItem(this.key, JSON.stringify({
-      elapsedMs: this.elapsedMs
-    }));
-  }
-}
-    _load() {
+    _loadElapsedOnly() {
       try {
         const raw = localStorage.getItem(this.key);
         if (!raw) return;
         const data = JSON.parse(raw);
         this.elapsedMs = data.elapsedMs || 0;
-        this.running = !!data.running;
-        this.startedAtEpoch = data.startedAtEpoch || 0;
       } catch {}
+      // Important: never restore running state
+      this.running = false;
+      this.startedAtEpoch = 0;
+    }
+
+    _saveElapsedOnly() {
+      localStorage.setItem(this.key, JSON.stringify({ elapsedMs: this.elapsedMs }));
+    }
+
+    getElapsedMs() {
+      if (!this.running) return this.elapsedMs;
+      return this.elapsedMs + (Date.now() - this.startedAtEpoch);
+    }
+
+    start() {
+      if (this.running) return;
+      this.running = true;
+      this.startedAtEpoch = Date.now();
+    }
+
+    stop() {
+      if (!this.running) return;
+      this.elapsedMs = this.getElapsedMs();
+      this.running = false;
+      this.startedAtEpoch = 0;
+      this._saveElapsedOnly();
+    }
+
+    reset() {
+      this.elapsedMs = 0;
+      this.running = false;
+      this.startedAtEpoch = 0;
+      this._saveElapsedOnly();
     }
   }
 
+  // ---------- Timers ----------
   const speech = new Stopwatch('mt_speech');
   const pros   = new Stopwatch('mt_pros');
   const def    = new Stopwatch('mt_def');
   const round  = new Stopwatch('mt_round');
 
+  // Force round to default 0:00 on load (per your request).
+  // It will only move if the user presses Start.
+  round.reset();
+
+  // ---------- Role (persisted; never auto-changed) ----------
   const rolePros = document.getElementById('rolePros');
   const roleDef  = document.getElementById('roleDef');
+
   function getRole() {
     const saved = localStorage.getItem('mt_role');
     if (saved === 'pros' || saved === 'def') return saved;
@@ -518,11 +507,14 @@
     rolePros.checked = r === 'pros';
     roleDef.checked  = r === 'def';
   }
+
   const initialRole = getRole();
   if (initialRole) setRole(initialRole);
+
   rolePros.addEventListener('change', () => { if (rolePros.checked) setRole('pros'); });
   roleDef.addEventListener('change', () => { if (roleDef.checked) setRole('def'); });
 
+  // ---------- Speech log ----------
   function loadSpeechLog() {
     try { return JSON.parse(localStorage.getItem('mt_speech_log') || '[]'); }
     catch { return []; }
@@ -546,6 +538,7 @@
     return true;
   }
 
+  // ---------- UI refs ----------
   const speechTimeEl = document.getElementById('speechTime');
   const prosTimeEl   = document.getElementById('prosTime');
   const defTimeEl    = document.getElementById('defTime');
@@ -560,9 +553,11 @@
   const logList = document.getElementById('logList');
   const logHint = document.getElementById('logHint');
 
+  // ---------- Mutual exclusion: pros/def never run together ----------
   function startPros() { if (def.running) def.stop(); pros.start(); }
   function startDef()  { if (pros.running) pros.stop(); def.start(); }
 
+  // ---------- Render loop ----------
   function render() {
     speechTimeEl.textContent = formatMsToMMSS(speech.getElapsedMs());
     prosTimeEl.textContent   = formatMsToMMSS(pros.getElapsedMs());
@@ -581,9 +576,10 @@
     if (round.running)  running.push('Round');
     runningIndicator.textContent = running.length ? `Running: ${running.join(', ')}` : 'All stopped';
   }
-  setInterval(render, 250);
+  setInterval(render, 200);
   render();
 
+  // ---------- Speech controls with role sync ----------
   function speechStartSynced() {
     speech.start();
     const r = getRole();
@@ -596,6 +592,7 @@
     if (r === 'pros') pros.stop();
     if (r === 'def')  def.stop();
   }
+
   document.getElementById('speechStart').addEventListener('click', speechStartSynced);
   document.getElementById('speechPause').addEventListener('click', speechPauseSynced);
   document.getElementById('speechReset').addEventListener('click', () => {
@@ -603,6 +600,7 @@
     speech.reset();
   });
 
+  // ---------- Side controls ----------
   document.getElementById('prosStart').addEventListener('click', startPros);
   document.getElementById('prosPause').addEventListener('click', () => pros.stop());
   document.getElementById('prosReset').addEventListener('click', () => pros.reset());
@@ -611,11 +609,14 @@
   document.getElementById('defPause').addEventListener('click', () => def.stop());
   document.getElementById('defReset').addEventListener('click', () => def.reset());
 
+  // ---------- Round controls (manual only) ----------
   document.getElementById('roundStart').addEventListener('click', () => round.start());
   document.getElementById('roundPause').addEventListener('click', () => round.stop());
   document.getElementById('roundReset').addEventListener('click', () => round.reset());
 
+  // ---------- Objections mode (pause/resume only running set; NOT round) ----------
   let pausedSet = { speech: false, pros: false, def: false };
+
   function objectionPause() {
     pausedSet = { speech: speech.running, pros: pros.running, def: def.running };
     speech.stop(); pros.stop(); def.stop();
@@ -626,9 +627,11 @@
     if (pausedSet.def) startDef();
     pausedSet = { speech: false, pros: false, def: false };
   }
+
   document.getElementById('objectionPause').addEventListener('click', objectionPause);
   document.getElementById('objectionResume').addEventListener('click', objectionResume);
 
+  // ---------- End Round / Reset Everything ----------
   function endRound() {
     maybeLogCurrentSpeech('end_round');
     speech.stop(); pros.stop(); def.stop(); round.stop();
@@ -647,6 +650,7 @@
   }
   document.getElementById('resetEverythingBtn').addEventListener('click', resetEverything);
 
+  // ---------- Log UI + Export ----------
   function renderLog() {
     logList.innerHTML = '';
     if (!speechLog.length) {
@@ -698,6 +702,7 @@
       window.prompt('Copy this log:', text);
     }
   }
+
   document.getElementById('exportLogBtn').addEventListener('click', exportLog);
   document.getElementById('clearLogBtn').addEventListener('click', () => {
     speechLog = [];
@@ -707,7 +712,7 @@
 
   renderLog();
 
-  // Wake Lock
+  // ---------- Wake Lock ----------
   let wakeLock = null;
   async function requestWakeLock() {
     try {
@@ -743,6 +748,7 @@
     }
   });
 
+  // ---------- Service worker ----------
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
