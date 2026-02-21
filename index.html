@@ -300,40 +300,80 @@
       text-transform: uppercase;
     }
 
-    /* -------- Mobile Layout Toggle (CSS-only behavior) -------- */
-    body.mobile-mode header .subtitle { display: none; }
+ /* -------- Mobile Layout Toggle (CSS-only behavior) -------- */
+body.mobile-mode header .subtitle { display: none; }
 
-    body.mobile-mode .wrap {
-      padding: 12px 12px calc(18px + env(safe-area-inset-bottom));
-      max-width: 560px;
-    }
+/* Tighten overall spacing so Speech + Sides + Objections fit on one screen */
+body.mobile-mode .wrap {
+  padding: 10px 10px calc(14px + env(safe-area-inset-bottom));
+  max-width: 560px;
+}
 
-    body.mobile-mode .card,
-    body.mobile-mode .dock {
-      padding: 12px;
-      border-radius: 16px;
-    }
+body.mobile-mode .grid {
+  gap: 10px;
+}
 
-    body.mobile-mode .time.big { font-size: 56px; }
-    body.mobile-mode .time.med { font-size: 42px; }
+/* Force 2-column layout on mobile so Pros/Def sit side-by-side */
+body.mobile-mode .grid {
+  grid-template-columns: 1fr 1fr;
+}
 
-    body.mobile-mode .controls {
-      grid-template-columns: 1fr 1fr;
-    }
+/* Keep full-width sections full width */
+body.mobile-mode .span-2 {
+  grid-column: 1 / span 2;
+}
 
-    body.mobile-mode .controls button.reset {
-      grid-column: 1 / span 2;
-      min-height: 44px;
-    }
+body.mobile-mode .card,
+body.mobile-mode .dock {
+  padding: 10px;
+  border-radius: 16px;
+}
 
-    body.mobile-mode button.pause,
-    body.mobile-mode button.objection,
-    body.mobile-mode button.resume {
-      min-height: 56px;
-    }
+/* Make the key timers big but not screen-eating */
+body.mobile-mode .time.big { font-size: 50px; margin: 6px 0 10px; }
+body.mobile-mode .time.med { font-size: 36px; margin: 6px 0 10px; }
 
-    body.mobile-mode .top-controls { gap: 8px; }
-    body.mobile-mode .rolebox { min-width: 220px; }
+/* Make controls compact and consistent */
+body.mobile-mode .controls {
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Reset becomes a full-width “third row” so Start/Pause stay big targets */
+body.mobile-mode .controls button.reset {
+  grid-column: 1 / span 2;
+  min-height: 42px;
+  padding: 10px 12px;
+}
+
+/* Reduce button height slightly (still thumb-friendly) */
+body.mobile-mode button {
+  min-height: 46px;
+  padding: 11px 12px;
+}
+
+/* Objection buttons remain prominent */
+body.mobile-mode button.objection,
+body.mobile-mode button.resume {
+  min-height: 54px;
+  font-size: 16px;
+}
+
+/* Tighten labels */
+body.mobile-mode .name { font-size: 12px; }
+body.mobile-mode .hint { font-size: 11px; }
+body.mobile-mode .small { display: none; } /* hides helper text to save vertical space */
+
+/* Header controls: keep it tidy */
+body.mobile-mode .top-controls { gap: 8px; }
+body.mobile-mode .rolebox { min-width: 220px; padding: 8px 10px; }
+
+/* Make the log less tall by default (still scrollable) */
+body.mobile-mode .loglist {
+  max-height: 180px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
   </style>
 </head>
 
