@@ -44,6 +44,15 @@
     }
     header h1{ font-size:16px; margin:0; font-weight:950; letter-spacing:.2px; }
     header .subtitle{ font-size:12px; opacity:.7; margin-top:2px; }
+    /* Auto-hide header on scroll (mobile-friendly) */
+header.auto-hide {
+  transition: transform 180ms ease, opacity 180ms ease;
+  will-change: transform;
+}
+header.auto-hide.is-hidden {
+  transform: translateY(-120%);
+  opacity: 0.98;
+}
 
     .top-controls{
       display:flex;
