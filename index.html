@@ -299,47 +299,41 @@
       letter-spacing: .2px;
       text-transform: uppercase;
     }
-    /* -------- Mobile Layout Toggle (safe: CSS-only) -------- */
-body.mobile-mode header .subtitle { display: none; }
 
-body.mobile-mode .wrap {
-  padding: 12px 12px calc(18px + env(safe-area-inset-bottom));
-  max-width: 560px;
-}
+    /* -------- Mobile Layout Toggle (CSS-only behavior) -------- */
+    body.mobile-mode header .subtitle { display: none; }
 
-body.mobile-mode .card,
-body.mobile-mode .dock {
-  padding: 12px;
-  border-radius: 16px;
-}
+    body.mobile-mode .wrap {
+      padding: 12px 12px calc(18px + env(safe-area-inset-bottom));
+      max-width: 560px;
+    }
 
-body.mobile-mode .time.big { font-size: 56px; }
-body.mobile-mode .time.med { font-size: 42px; }
+    body.mobile-mode .card,
+    body.mobile-mode .dock {
+      padding: 12px;
+      border-radius: 16px;
+    }
 
-body.mobile-mode .controls {
-  grid-template-columns: 1fr 1fr;
-}
+    body.mobile-mode .time.big { font-size: 56px; }
+    body.mobile-mode .time.med { font-size: 42px; }
 
-/* Make Reset easier but still smaller: full-width row below */
-body.mobile-mode .controls button.reset {
-  grid-column: 1 / span 2;
-  min-height: 44px;
-}
+    body.mobile-mode .controls {
+      grid-template-columns: 1fr 1fr;
+    }
 
-/* Slightly larger pause button targets on mobile */
-body.mobile-mode button.pause,
-body.mobile-mode button.objection,
-body.mobile-mode button.resume {
-  min-height: 56px;
-}
+    body.mobile-mode .controls button.reset {
+      grid-column: 1 / span 2;
+      min-height: 44px;
+    }
 
-/* Keep header controls from wrapping into chaos on iPhone */
-body.mobile-mode .top-controls {
-  gap: 8px;
-}
-body.mobile-mode .rolebox {
-  min-width: 220px;
-}
+    body.mobile-mode button.pause,
+    body.mobile-mode button.objection,
+    body.mobile-mode button.resume {
+      min-height: 56px;
+    }
+
+    body.mobile-mode .top-controls { gap: 8px; }
+    body.mobile-mode .rolebox { min-width: 220px; }
   </style>
 </head>
 
@@ -361,16 +355,18 @@ body.mobile-mode .rolebox {
 
     <button class="resetall" id="resetEverythingBtn" title="Reset all timers and clear speech log">Reset Everything</button>
 
+    <label class="chip" title="Toggle a more compact, thumb-friendly layout">
+      <input id="mobileToggle" type="checkbox" />
+      Mobile Layout
+    </label>
+
     <label class="chip" title="Keep screen awake (if supported)">
       <input id="wakeToggle" type="checkbox" />
       Wake Lock
     </label>
   </div>
 </header>
-<label class="chip" title="Toggle a more compact, thumb-friendly layout">
-  <input id="mobileToggle" type="checkbox" />
-  Mobile Layout
-</label>
+
 <div class="wrap">
   <div class="grid">
 
@@ -465,6 +461,23 @@ body.mobile-mode .rolebox {
 </div>
 
 <script>
+  // ---------- Mobile layout toggle (CSS-only behavior) ----------
+  const mobileToggle = document.getElementById('mobileToggle');
+  function applyMobileMode(enabled) {
+    document.body.classList.toggle('mobile-mode', !!enabled);
+    localStorage.setItem('mt_mobile_mode', enabled ? '1' : '0');
+    if (mobileToggle) mobileToggle.checked = !!enabled;
+  }
+  try {
+    const saved = localStorage.getItem('mt_mobile_mode');
+    applyMobileMode(saved === '1');
+  } catch {
+    applyMobileMode(false);
+  }
+  if (mobileToggle) {
+    mobileToggle.addEventListener('change', () => applyMobileMode(mobileToggle.checked));
+  }
+
   // ---------- Helpers ----------
   function formatMsToMMSS(ms) {
     ms = Math.max(0, ms);
@@ -491,7 +504,7 @@ body.mobile-mode .rolebox {
         const data = JSON.parse(raw);
         this.elapsedMs = data.elapsedMs || 0;
       } catch {}
-      // Important: never restore running state
+      // Never restore running state
       this.running = false;
       this.startedAtEpoch = 0;
     }
@@ -533,8 +546,7 @@ body.mobile-mode .rolebox {
   const def    = new Stopwatch('mt_def');
   const round  = new Stopwatch('mt_round');
 
-  // Force round to default 0:00 on load (per your request).
-  // It will only move if the user presses Start.
+  // Round defaults to 0:00 and does not auto-start
   round.reset();
 
   // ---------- Role (persisted; never auto-changed) ----------
