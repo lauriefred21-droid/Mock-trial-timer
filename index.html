@@ -28,8 +28,9 @@
       touch-action: manipulation;
     }
 
+    /* Sleeker header */
     header{
-      padding:14px 16px calc(12px + env(safe-area-inset-top));
+      padding: 10px 12px calc(8px + env(safe-area-inset-top));
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
@@ -40,19 +41,20 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       z-index:10;
-      gap: 12px;
+      gap: 10px;
     }
-    header h1{ font-size:16px; margin:0; font-weight:950; letter-spacing:.2px; }
-    header .subtitle{ font-size:12px; opacity:.7; margin-top:2px; }
-    /* Auto-hide header on scroll (mobile-friendly) */
-header.auto-hide {
-  transition: transform 180ms ease, opacity 180ms ease;
-  will-change: transform;
-}
-header.auto-hide.is-hidden {
-  transform: translateY(-120%);
-  opacity: 0.98;
-}
+    header h1{ font-size:14px; margin:0; font-weight:950; letter-spacing:.2px; }
+    header .subtitle{ font-size:11px; opacity:.7; margin-top:2px; }
+
+    /* Auto-hide header */
+    header.auto-hide{
+      transition: transform 160ms ease, opacity 160ms ease;
+      will-change: transform;
+    }
+    header.auto-hide.is-hidden{
+      transform: translateY(-120%);
+      opacity: 0.98;
+    }
 
     .top-controls{
       display:flex;
@@ -309,80 +311,63 @@ header.auto-hide.is-hidden {
       text-transform: uppercase;
     }
 
- /* -------- Mobile Layout Toggle (CSS-only behavior) -------- */
-body.mobile-mode header .subtitle { display: none; }
+    /* -------- Mobile Layout Toggle (CSS-only behavior) -------- */
+    body.mobile-mode header .subtitle { display: none; }
 
-/* Tighten overall spacing so Speech + Sides + Objections fit on one screen */
-body.mobile-mode .wrap {
-  padding: 10px 10px calc(14px + env(safe-area-inset-bottom));
-  max-width: 560px;
-}
+    body.mobile-mode .wrap {
+      padding: 10px 10px calc(14px + env(safe-area-inset-bottom));
+      max-width: 560px;
+    }
 
-body.mobile-mode .grid {
-  gap: 10px;
-}
+    body.mobile-mode .grid { gap: 10px; }
 
-/* Force 2-column layout on mobile so Pros/Def sit side-by-side */
-body.mobile-mode .grid {
-  grid-template-columns: 1fr 1fr;
-}
+    body.mobile-mode .grid { grid-template-columns: 1fr 1fr; }
 
-/* Keep full-width sections full width */
-body.mobile-mode .span-2 {
-  grid-column: 1 / span 2;
-}
+    body.mobile-mode .span-2 { grid-column: 1 / span 2; }
 
-body.mobile-mode .card,
-body.mobile-mode .dock {
-  padding: 10px;
-  border-radius: 16px;
-}
+    body.mobile-mode .card,
+    body.mobile-mode .dock {
+      padding: 10px;
+      border-radius: 16px;
+    }
 
-/* Make the key timers big but not screen-eating */
-body.mobile-mode .time.big { font-size: 50px; margin: 6px 0 10px; }
-body.mobile-mode .time.med { font-size: 36px; margin: 6px 0 10px; }
+    body.mobile-mode .time.big { font-size: 50px; margin: 6px 0 10px; }
+    body.mobile-mode .time.med { font-size: 36px; margin: 6px 0 10px; }
 
-/* Make controls compact and consistent */
-body.mobile-mode .controls {
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
+    body.mobile-mode .controls {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
 
-/* Reset becomes a full-width “third row” so Start/Pause stay big targets */
-body.mobile-mode .controls button.reset {
-  grid-column: 1 / span 2;
-  min-height: 42px;
-  padding: 10px 12px;
-}
+    body.mobile-mode .controls button.reset {
+      grid-column: 1 / span 2;
+      min-height: 42px;
+      padding: 10px 12px;
+    }
 
-/* Reduce button height slightly (still thumb-friendly) */
-body.mobile-mode button {
-  min-height: 46px;
-  padding: 11px 12px;
-}
+    body.mobile-mode button {
+      min-height: 46px;
+      padding: 11px 12px;
+    }
 
-/* Objection buttons remain prominent */
-body.mobile-mode button.objection,
-body.mobile-mode button.resume {
-  min-height: 54px;
-  font-size: 16px;
-}
+    body.mobile-mode button.objection,
+    body.mobile-mode button.resume {
+      min-height: 54px;
+      font-size: 16px;
+    }
 
-/* Tighten labels */
-body.mobile-mode .name { font-size: 12px; }
-body.mobile-mode .hint { font-size: 11px; }
-body.mobile-mode .small { display: none; } /* hides helper text to save vertical space */
+    body.mobile-mode .name { font-size: 12px; }
+    body.mobile-mode .hint { font-size: 11px; }
+    body.mobile-mode .small { display: none; }
 
-/* Header controls: keep it tidy */
-body.mobile-mode .top-controls { gap: 8px; }
-body.mobile-mode .rolebox { min-width: 220px; padding: 8px 10px; }
+    body.mobile-mode .top-controls { gap: 8px; }
+    body.mobile-mode .rolebox { min-width: 220px; padding: 8px 10px; }
 
-/* Make the log less tall by default (still scrollable) */
-body.mobile-mode .loglist {
-  max-height: 180px;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-}
+    body.mobile-mode .loglist {
+      max-height: 180px;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
   </style>
 </head>
 
@@ -510,7 +495,7 @@ body.mobile-mode .loglist {
 </div>
 
 <script>
-  // ---------- Mobile layout toggle (CSS-only behavior) ----------
+  // ---------- Mobile layout toggle ----------
   const mobileToggle = document.getElementById('mobileToggle');
   function applyMobileMode(enabled) {
     document.body.classList.toggle('mobile-mode', !!enabled);
@@ -526,6 +511,53 @@ body.mobile-mode .loglist {
   if (mobileToggle) {
     mobileToggle.addEventListener('change', () => applyMobileMode(mobileToggle.checked));
   }
+
+  // ---------- Auto-hide header immediately on scroll down; show on scroll up ----------
+  (function autoHideHeader() {
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    header.classList.add('auto-hide');
+
+    let lastY = window.scrollY || 0;
+    let ticking = false;
+    const DELTA = 2;
+
+    function onScroll() {
+      const y = window.scrollY || 0;
+      const dy = y - lastY;
+
+      if (y <= 2) {
+        header.classList.remove('is-hidden');
+        lastY = y;
+        ticking = false;
+        return;
+      }
+
+      if (Math.abs(dy) < DELTA) {
+        ticking = false;
+        return;
+      }
+
+      if (dy > 0) header.classList.add('is-hidden');
+      else header.classList.remove('is-hidden');
+
+      lastY = y;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(onScroll);
+    }, { passive: true });
+
+    // Tap near top edge to reveal (nice on iPhone)
+    window.addEventListener('touchstart', (e) => {
+      const y = e.touches && e.touches[0] ? e.touches[0].clientY : 9999;
+      if (y < 70) header.classList.remove('is-hidden');
+    }, { passive: true });
+  })();
 
   // ---------- Helpers ----------
   function formatMsToMMSS(ms) {
@@ -553,7 +585,6 @@ body.mobile-mode .loglist {
         const data = JSON.parse(raw);
         this.elapsedMs = data.elapsedMs || 0;
       } catch {}
-      // Never restore running state
       this.running = false;
       this.startedAtEpoch = 0;
     }
@@ -852,59 +883,7 @@ body.mobile-mode .loglist {
       await requestWakeLock();
     }
   });
-... (all your timer logic)
 
-renderLog();
-
-// ---------- Wake Lock ----------
-... wake lock code ...
-
-// >>> PUT THE AUTO-HIDE BLOCK RIGHT HERE <<<
-
-// ---------- Auto-hide header on scroll down; show on scroll up ----------
-(function autoHideHeader() {
-  const header = document.querySelector('header');
-  if (!header) return;
-
-  header.classList.add('auto-hide');
-
-  let lastY = window.scrollY || 0;
-  let ticking = false;
-  const HIDE_AFTER = 24;
-  const DELTA = 8;
-
-  function onScroll() {
-    const y = window.scrollY || 0;
-    const dy = y - lastY;
-
-    if (y <= HIDE_AFTER) {
-      header.classList.remove('is-hidden');
-      lastY = y;
-      ticking = false;
-      return;
-    }
-
-    if (Math.abs(dy) < DELTA) {
-      ticking = false;
-      return;
-    }
-
-    if (dy > 0) {
-      header.classList.add('is-hidden');
-    } else {
-      header.classList.remove('is-hidden');
-    }
-
-    lastY = y;
-    ticking = false;
-  }
-
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(onScroll);
-  }, { passive: true });
-})();
   // ---------- Service worker ----------
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
