@@ -10,219 +10,317 @@
   <link rel="manifest" href="manifest.webmanifest" />
 
   <style>
-    :root { color-scheme: dark; }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; }
+    :root{
+      color-scheme: dark;
+
+      /* Base */
+      --bg0: #070B14;
+      --bg1: #0B1220;
+      --card: rgba(19, 28, 46, 0.62);
+      --card2: rgba(19, 28, 46, 0.72);
+      --border: rgba(255,255,255,0.12);
+      --border-strong: rgba(255,255,255,0.18);
+      --text: #F4F6FA;
+      --muted: rgba(244,246,250,0.72);
+
+      /* Brand */
+      --blue: #102547;
+      --blue2: #244C8F;
+
+      /* Actions */
+      --start: #1F6F4A;
+      --stop:  #7A1C26;
+      --reset: #2B3C5A;
+
+      /* Warnings */
+      --warn: #C9A23A; /* muted gold */
+      --warn2: rgba(201,162,58,0.35);
+
+      /* Over / critical */
+      --over: #922833;
+      --over2: rgba(146,40,51,0.38);
+
+      /* Glass */
+      --blur: 18px;
+      --sat: 140%;
+
+      /* Glow strength */
+      --glow: 0 0 0 0 rgba(0,0,0,0);
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body{ height:100%; }
 
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background:
-        radial-gradient(1200px 800px at 20% -10%, rgba(130,87,229,0.35), transparent 60%),
-        radial-gradient(900px 700px at 110% 10%, rgba(44,203,161,0.25), transparent 55%),
-        radial-gradient(900px 700px at 50% 120%, rgba(255,181,72,0.18), transparent 55%),
-        #070814;
-      color:#f3f4f6;
+        radial-gradient(1200px 800px at 18% -10%, rgba(36,76,143,0.25), transparent 62%),
+        radial-gradient(900px 700px at 110% 10%, rgba(16,37,71,0.34), transparent 58%),
+        radial-gradient(900px 700px at 50% 120%, rgba(31,111,74,0.12), transparent 58%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      color: var(--text);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       touch-action: manipulation;
     }
 
-    /* Sleeker header */
+    /* Accessibility toggles */
+    body.reduce-transparency{
+      --card: rgba(19, 28, 46, 0.92);
+      --card2: rgba(19, 28, 46, 0.96);
+      --blur: 0px;
+      --sat: 100%;
+    }
+    body.high-contrast{
+      --border: rgba(255,255,255,0.28);
+      --border-strong: rgba(255,255,255,0.36);
+      --muted: rgba(244,246,250,0.86);
+    }
+    body.large-numbers .time.big{ font-size: 78px; }
+    body.large-numbers .time.med{ font-size: 58px; }
+    @media (max-width:420px){
+      body.large-numbers .time.big{ font-size: 64px; }
+      body.large-numbers .time.med{ font-size: 48px; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto !important; }
+      .sheet, .backdrop, .toast{ transition:none !important; animation:none !important; }
+      .card{ transition:none !important; }
+    }
+
+    /* Top bar */
     header{
-      padding: 10px 12px calc(8px + env(safe-area-inset-top));
+      padding: 12px 14px calc(10px + env(safe-area-inset-top));
+      position: sticky;
+      top: 0;
+      z-index: 20;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
-      border-bottom:1px solid rgba(255,255,255,0.08);
-      position:sticky;
-      top:0;
-      background: rgba(7,8,20,0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index:10;
       gap: 10px;
-    }
-    header h1{ font-size:14px; margin:0; font-weight:950; letter-spacing:.2px; }
-    header .subtitle{ font-size:11px; opacity:.7; margin-top:2px; }
 
-    /* Auto-hide header */
-    header.auto-hide{
-      transition: transform 160ms ease, opacity 160ms ease;
-      will-change: transform;
+      background: rgba(7, 11, 20, 0.55);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
     }
-    header.auto-hide.is-hidden{
-      transform: translateY(-120%);
-      opacity: 0.98;
-    }
-
-    .top-controls{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .chip{
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      border-radius:999px;
-      padding:10px 12px;
-      font-size:13px;
-      font-weight:850;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+    header .title{
+      font-weight: 950;
+      letter-spacing: .2px;
+      font-size: 14px;
       user-select:none;
       white-space: nowrap;
     }
-    .chip input{ transform: scale(1.12); }
-
-    .rolebox{
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      border-radius: 16px;
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
       padding: 10px 12px;
-      display: grid;
-      gap: 8px;
-      min-width: 260px;
-    }
-    .rolebox .title{
-      font-size: 12px;
-      opacity: .8;
-      font-weight: 850;
-      letter-spacing: .2px;
-      text-transform: uppercase;
-    }
-    .rolebox .row{
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .roleopt{
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 950;
       font-size: 13px;
-      font-weight: 900;
-      opacity: .95;
-      user-select: none;
+      cursor: pointer;
+      user-select:none;
+      min-height: 44px;
     }
-    .roleopt input { transform: scale(1.12); }
+    .pill:active{ transform: scale(0.99); }
 
+    /* Layout */
     .wrap{
-      padding:16px 16px calc(20px + env(safe-area-inset-bottom));
-      max-width:900px;
-      margin:0 auto;
+      padding: 14px 14px calc(18px + env(safe-area-inset-bottom));
+      max-width: 920px;
+      margin: 0 auto;
     }
 
-    .grid{ display:grid; grid-template-columns:1fr; gap:12px; }
-    @media (min-width:860px){
-      .grid{ grid-template-columns:1fr 1fr; }
-      .span-2{ grid-column:1 / span 2; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    /* Keep Defense left, Prosecution right ALWAYS on wide screens */
+    @media (min-width: 860px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+      .span-2{ grid-column: 1 / span 2; }
     }
 
     .card{
-      border:1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.06);
-      border-radius:18px;
-      padding:14px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.42);
       overflow:hidden;
       position:relative;
+      backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+      transition: box-shadow 160ms ease, border-color 160ms ease;
     }
     .card::before{
       content:"";
       position:absolute;
       inset:0;
-      background: radial-gradient(600px 240px at 20% 0%, rgba(255,255,255,0.12), transparent 60%);
+      background: radial-gradient(700px 260px at 20% 0%, rgba(255,255,255,0.10), transparent 62%);
       pointer-events:none;
+      opacity: 0.9;
+    }
+
+    /* Whole-card glow states */
+    .card.state-running{
+      border-color: rgba(36,76,143,0.55);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,0.42),
+        0 0 0 1px rgba(36,76,143,0.22),
+        0 0 22px rgba(36,76,143,0.22);
+    }
+    .card.state-warn{
+      border-color: rgba(201,162,58,0.55);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,0.42),
+        0 0 0 1px rgba(201,162,58,0.18),
+        0 0 20px rgba(201,162,58,0.18);
+    }
+    .card.state-over{
+      border-color: rgba(146,40,51,0.62);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,0.42),
+        0 0 0 1px rgba(146,40,51,0.22),
+        0 0 22px rgba(146,40,51,0.20);
     }
 
     .label{
       display:flex;
-      align-items:baseline;
       justify-content:space-between;
-      gap:10px;
-      margin-bottom:8px;
+      align-items:baseline;
+      gap: 12px;
+      margin-bottom: 8px;
       position:relative;
     }
     .name{
-      font-size:13px;
-      opacity:.92;
-      font-weight:950;
-      letter-spacing:.25px;
-      text-transform:uppercase;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .22px;
+      text-transform: uppercase;
+      opacity: 0.94;
     }
-    .hint{ font-size:12px; opacity:.7; font-weight:750; }
+    .hint{
+      font-size: 12px;
+      font-weight: 800;
+      opacity: 0.78;
+    }
 
     .time{
       font-variant-numeric: tabular-nums;
-      letter-spacing:.6px;
+      letter-spacing: .6px;
       user-select:none;
-      margin:8px 0 12px;
+      margin: 10px 0 10px;
+      font-weight: 980;
       position:relative;
-      font-weight:980;
     }
-    .time.big{ font-size:72px; line-height:1.0; }
-    .time.med{ font-size:54px; line-height:1.03; }
+    .time.big{ font-size: 72px; line-height: 1.0; }
+    .time.med{ font-size: 54px; line-height: 1.03; }
     @media (max-width:420px){
-      .time.big{ font-size:58px; }
-      .time.med{ font-size:44px; }
+      .time.big{ font-size: 58px; }
+      .time.med{ font-size: 44px; }
     }
+
+    .subline{
+      margin-top: -2px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      opacity: .92;
+      font-variant-numeric: tabular-nums;
+      position: relative;
+    }
+    .subline.muted{ opacity: .75; font-weight: 820; }
 
     .controls{
       display:grid;
       grid-template-columns: 1fr 1fr auto;
-      gap:10px;
+      gap: 10px;
       position:relative;
+      margin-top: 10px;
     }
 
     button{
-      border:1px solid rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.16);
       background: rgba(255,255,255,0.08);
-      color:#f3f4f6;
-      padding:12px 14px;
-      border-radius:14px;
-      font-size:14px;
-      font-weight:950;
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 950;
       cursor:pointer;
       user-select:none;
-      min-height:48px;
+      min-height: 48px;
     }
     button:active{ transform: scale(0.99); }
 
-    button.primary{
-      background: rgba(255,255,255,0.92);
-      color:#0b1020;
-      border-color: rgba(255,255,255,0.92);
+    button.start{
+      background: var(--start);
+      border-color: rgba(31,111,74,0.75);
+      color: #06130C;
+      font-weight: 990;
     }
     button.pause{
-      background: rgba(255, 70, 70, 0.18);
-      border-color: rgba(255, 70, 70, 0.35);
-      font-weight:980;
+      background: rgba(122, 28, 38, 0.18);
+      border-color: rgba(146,40,51,0.45);
+      color: var(--text);
+      font-weight: 980;
     }
     button.reset{
-      padding:10px 12px;
-      min-height:44px;
-      font-size:12px;
-      font-weight:850;
-      opacity:.92;
+      background: rgba(43,60,90,0.55);
+      border-color: rgba(43,60,90,0.72);
+      padding: 10px 12px;
+      min-height: 44px;
+      font-size: 12px;
+      font-weight: 900;
+      opacity: .95;
     }
 
+    /* Segment selector (AMTA only) */
+    .segbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .segbtn{
+      padding: 10px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      font-weight: 920;
+      font-size: 12px;
+      cursor:pointer;
+      user-select:none;
+      min-height: 40px;
+    }
+    .segbtn[aria-pressed="true"]{
+      border-color: rgba(36,76,143,0.55);
+      background: rgba(36,76,143,0.22);
+    }
+
+    /* Objections dock */
     .dock{
-      margin-top:12px;
-      padding:12px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,0.12);
-      background: rgba(7,8,20,0.55);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(10, 16, 30, 0.52);
+      backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+      box-shadow: 0 18px 40px rgba(0,0,0,0.48);
       display:grid;
-      gap:10px;
+      gap: 10px;
       position:relative;
     }
     .dock-top{
@@ -231,665 +329,1850 @@
       align-items:baseline;
       gap:10px;
     }
-    .dock-title{ font-weight:980; letter-spacing:.3px; }
-    .dock-sub{ font-size:12px; opacity:.75; font-weight:750; }
-
-    .dock-buttons{ display:grid; grid-template-columns:1fr; gap:10px; }
+    .dock-title{
+      font-weight: 980;
+      letter-spacing: .3px;
+    }
+    .dock-sub{
+      font-size: 12px;
+      opacity: .76;
+      font-weight: 780;
+    }
+    .dock-buttons{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
     button.objection{
-      background: rgba(255, 70, 70, 0.92);
-      border-color: rgba(255, 70, 70, 0.92);
-      color:#0b1020;
-      font-weight:990;
-      letter-spacing:.4px;
-      min-height:56px;
-      font-size:16px;
+      background: var(--stop);
+      border-color: rgba(146,40,51,0.7);
+      color: #150607;
+      font-weight: 990;
+      min-height: 56px;
+      font-size: 16px;
+      letter-spacing: .3px;
     }
     button.resume{
-      background: rgba(44,203,161,0.72);
-      border-color: rgba(44,203,161,0.72);
-      color:#071018;
-      font-weight:990;
-      min-height:56px;
-      font-size:16px;
+      background: rgba(31,111,74,0.82);
+      border-color: rgba(31,111,74,0.82);
+      color: #07140D;
+      font-weight: 990;
+      min-height: 56px;
+      font-size: 16px;
+      letter-spacing: .3px;
     }
 
-    button.resetall{
-      background: rgba(44,203,161,0.92);
-      border-color: rgba(44,203,161,0.92);
-      color:#071018;
-      font-weight:990;
-      letter-spacing:.3px;
-      min-height:46px;
-    }
+    .row2{ display:grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width:860px){ .row2{ grid-template-columns:1fr 1fr; } }
+
     button.endround{
-      background: rgba(255, 181, 72, 0.92);
-      border-color: rgba(255, 181, 72, 0.92);
-      color:#0b1020;
-      font-weight:990;
-      letter-spacing:.3px;
-      min-height:52px;
+      background: rgba(201,162,58,0.92);
+      border-color: rgba(201,162,58,0.92);
+      color:#141006;
+      font-weight: 990;
+      min-height: 52px;
     }
     button.export{
       background: rgba(255,255,255,0.92);
       border-color: rgba(255,255,255,0.92);
       color:#0b1020;
-      font-weight:980;
-      min-height:46px;
+      font-weight: 980;
+      min-height: 46px;
     }
-
-    .small{ font-size:12px; opacity:.78; line-height:1.35; position:relative; }
 
     .log{
       margin-top: 10px;
-      display: grid;
+      display:grid;
       gap: 8px;
     }
     .loglist{
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
       gap: 8px;
     }
     .logitem{
       display:flex;
       justify-content:space-between;
-      gap:12px;
+      gap: 12px;
       padding: 10px 12px;
       border-radius: 14px;
-      border:1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.06);
       font-variant-numeric: tabular-nums;
       font-weight: 850;
       align-items: baseline;
     }
     .logitem .meta{
-      opacity: .8;
-      font-weight: 800;
+      opacity: .82;
+      font-weight: 820;
       font-size: 12px;
       letter-spacing: .2px;
       text-transform: uppercase;
     }
 
-    /* -------- Mobile Layout Toggle (CSS-only behavior) -------- */
-    body.mobile-mode header .subtitle { display: none; }
-
-    body.mobile-mode .wrap {
-      padding: 10px 10px calc(14px + env(safe-area-inset-bottom));
-      max-width: 560px;
+    .small{
+      font-size: 12px;
+      opacity: .78;
+      line-height: 1.35;
+      position:relative;
     }
 
-    body.mobile-mode .grid { gap: 10px; }
-
-    body.mobile-mode .grid { grid-template-columns: 1fr 1fr; }
-
-    body.mobile-mode .span-2 { grid-column: 1 / span 2; }
-
-    body.mobile-mode .card,
-    body.mobile-mode .dock {
+    /* Mobile layout toggle */
+    body.mobile-mode .wrap{
+      padding: 10px 10px calc(14px + env(safe-area-inset-bottom));
+      max-width: 620px;
+    }
+    body.mobile-mode .grid{ gap: 10px; }
+    body.mobile-mode .grid{ grid-template-columns: 1fr 1fr; }
+    body.mobile-mode .span-2{ grid-column: 1 / span 2; }
+    body.mobile-mode .card, body.mobile-mode .dock{
       padding: 10px;
       border-radius: 16px;
     }
+    body.mobile-mode .time.big{ font-size: 50px; margin: 6px 0 10px; }
+    body.mobile-mode .time.med{ font-size: 36px; margin: 6px 0 10px; }
+    body.mobile-mode .controls{ grid-template-columns: 1fr 1fr; gap: 8px; }
+    body.mobile-mode .controls button.reset{ grid-column: 1 / span 2; min-height: 42px; padding: 10px 12px; }
+    body.mobile-mode button{ min-height: 46px; padding: 11px 12px; }
+    body.mobile-mode button.objection, body.mobile-mode button.resume{ min-height: 54px; font-size: 16px; }
+    body.mobile-mode .small{ display:none; }
+    body.mobile-mode .loglist{ max-height: 180px; overflow:auto; -webkit-overflow-scrolling: touch; }
 
-    body.mobile-mode .time.big { font-size: 50px; margin: 6px 0 10px; }
-    body.mobile-mode .time.med { font-size: 36px; margin: 6px 0 10px; }
-
-    body.mobile-mode .controls {
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+    /* Lock layout */
+    body.lock-layout{
+      overflow: hidden;
+    }
+    body.lock-layout .hide-when-locked{ display:none !important; }
+    body.lock-layout header{ display:none; }
+    .lockbar{
+      display:none;
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      padding: 12px 14px calc(10px + env(safe-area-inset-top));
+      background: rgba(7, 11, 20, 0.55);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    body.lock-layout .lockbar{ display:flex; }
+    .lockbar .locktitle{
+      font-weight: 950;
+      letter-spacing: .2px;
+      font-size: 13px;
+      opacity: .92;
     }
 
-    body.mobile-mode .controls button.reset {
-      grid-column: 1 / span 2;
-      min-height: 42px;
-      padding: 10px 12px;
+    /* Options sheet (Liquid Glass-ish) */
+    .backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.38);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+      z-index: 40;
     }
-
-    body.mobile-mode button {
-      min-height: 46px;
-      padding: 11px 12px;
+    .backdrop.open{
+      opacity: 1;
+      pointer-events: auto;
     }
-
-    body.mobile-mode button.objection,
-    body.mobile-mode button.resume {
-      min-height: 54px;
-      font-size: 16px;
-    }
-
-    body.mobile-mode .name { font-size: 12px; }
-    body.mobile-mode .hint { font-size: 11px; }
-    body.mobile-mode .small { display: none; }
-
-    body.mobile-mode .top-controls { gap: 8px; }
-    body.mobile-mode .rolebox { min-width: 220px; padding: 8px 10px; }
-
-    body.mobile-mode .loglist {
-      max-height: 180px;
+    .sheet{
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-14px) scale(0.985);
+      width: min(560px, calc(100% - 18px));
+      max-height: calc(100vh - 20px);
       overflow: auto;
       -webkit-overflow-scrolling: touch;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(16, 37, 71, 0.55);
+      backdrop-filter: blur(22px) saturate(155%);
+      -webkit-backdrop-filter: blur(22px) saturate(155%);
+      box-shadow: 0 30px 70px rgba(0,0,0,0.60);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 170ms ease, transform 220ms cubic-bezier(.2,.9,.2,1);
+      z-index: 45;
+    }
+    .sheet.open{
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0px) scale(1);
+    }
+    .sheet-header{
+      padding: 14px 14px 10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      background: rgba(16, 37, 71, 0.35);
+      backdrop-filter: blur(22px) saturate(155%);
+      -webkit-backdrop-filter: blur(22px) saturate(155%);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .sheet-title{
+      font-weight: 980;
+      letter-spacing: .2px;
+    }
+    .sheet-close{
+      border-radius: 999px;
+      padding: 10px 12px;
+      min-height: 40px;
+      font-size: 12px;
+      font-weight: 950;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      cursor:pointer;
+    }
+    .sheet-body{ padding: 12px 14px 14px; display:grid; gap: 12px; }
+    .sheet-group{
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      padding: 12px;
+    }
+    .group-title{
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .22px;
+      font-weight: 950;
+      opacity: .85;
+      margin-bottom: 10px;
+    }
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .segrow{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      align-items:center;
+    }
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      font-weight: 900;
+      font-size: 13px;
+      opacity: .95;
+      user-select:none;
+      white-space: nowrap;
+    }
+    .toggle input{ transform: scale(1.15); }
+
+    .select{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      font-weight: 900;
+      font-size: 14px;
+    }
+    .btnrow{ display:grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+    .btnrow.two{ grid-template-columns: 1fr 1fr; }
+    @media (max-width: 420px){ .btnrow.two{ grid-template-columns:1fr; } }
+
+    .danger{
+      border-color: rgba(146,40,51,0.55) !important;
+      background: rgba(122, 28, 38, 0.24) !important;
+    }
+    .good{
+      border-color: rgba(31,111,74,0.55) !important;
+      background: rgba(31,111,74,0.20) !important;
+      color: #07140D !important;
+      font-weight: 980 !important;
+    }
+
+    /* Small toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity 160ms ease, transform 180ms ease;
+      z-index: 60;
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0px);
+    }
+
+    /* Confirm modal */
+    .modal{
+      position: fixed;
+      inset: 0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 70;
+    }
+    .modal.open{ display:flex; }
+    .modal .panel{
+      width: min(520px, calc(100% - 18px));
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(16,37,71,0.62);
+      backdrop-filter: blur(22px) saturate(155%);
+      -webkit-backdrop-filter: blur(22px) saturate(155%);
+      box-shadow: 0 30px 70px rgba(0,0,0,0.62);
+      padding: 14px;
+    }
+    .modal h2{
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 980;
+      letter-spacing: .2px;
+    }
+    .modal p{
+      margin: 0 0 12px;
+      font-size: 12px;
+      opacity: .84;
+      line-height: 1.35;
+      font-weight: 750;
     }
   </style>
 </head>
 
 <body>
-<header>
-  <div>
-    <h1>Mock Trial Timer</h1>
-    <div class="subtitle">Manual start. Accurate time. No ghosts.</div>
+  <header aria-label="Top bar">
+    <div class="title">Mock Trial Timer</div>
+    <button class="pill" id="optionsBtn" aria-haspopup="dialog" aria-expanded="false">Options</button>
+  </header>
+
+  <!-- Lock bar (visible in lock layout) -->
+  <div class="lockbar" aria-label="Locked mode bar">
+    <div class="locktitle">Locked View</div>
+    <button class="pill" id="unlockBtn">Unlock</button>
   </div>
 
-  <div class="top-controls">
-    <div class="rolebox" title="Choose your side so Speech Start/Pause also controls your side total">
-      <div class="title">Your side (sync Speech with)</div>
-      <div class="row">
-        <label class="roleopt"><input type="radio" name="role" value="pros" id="rolePros"> Prosecution</label>
-        <label class="roleopt"><input type="radio" name="role" value="def" id="roleDef"> Defense</label>
-      </div>
+  <div class="wrap">
+    <div class="grid">
+
+      <!-- Current Speech -->
+      <section class="card span-2" id="cardSpeech" aria-label="Current Speech">
+        <div class="label">
+          <div class="name">Current Speech</div>
+          <div class="hint" id="speechHint">Stopped</div>
+        </div>
+        <div class="time big" id="speechTime">00:00</div>
+        <div class="subline muted" id="speechSub">Ready</div>
+
+        <div class="controls">
+          <button class="start" id="speechStart">Start</button>
+          <button class="pause" id="speechPause">Pause</button>
+          <button class="reset" id="speechReset">Reset</button>
+        </div>
+
+        <!-- AMTA segment selector -->
+        <div class="segbar" id="segmentBar" aria-label="AMTA segment selector" style="display:none;">
+          <button class="segbtn" data-seg="opening" aria-pressed="true">Opening</button>
+          <button class="segbtn" data-seg="direct" aria-pressed="false">Direct</button>
+          <button class="segbtn" data-seg="cross" aria-pressed="false">Cross</button>
+          <button class="segbtn" data-seg="closing" aria-pressed="false">Closing</button>
+          <button class="segbtn" data-seg="rebuttal" aria-pressed="false">Rebuttal</button>
+        </div>
+
+        <div class="small">
+          Start/Pause syncs with your selected side. Objections pauses the active set.
+        </div>
+      </section>
+
+      <!-- DEFENSE always LEFT -->
+      <section class="card" id="cardDef" aria-label="Defense">
+        <div class="label">
+          <div class="name">Defense Total Time</div>
+          <div class="hint" id="defHint">Stopped</div>
+        </div>
+        <div class="time med" id="defTime">00:00</div>
+        <div class="subline muted" id="defSub">Ready</div>
+
+        <div class="controls">
+          <button class="start" id="defStart">Start</button>
+          <button class="pause" id="defPause">Pause</button>
+          <button class="reset" id="defReset">Reset</button>
+        </div>
+
+        <!-- AMTA pools (Defense) -->
+        <div id="defPools" style="display:none; margin-top:12px; display:none;"></div>
+      </section>
+
+      <!-- PROSECUTION always RIGHT -->
+      <section class="card" id="cardPros" aria-label="Prosecution">
+        <div class="label">
+          <div class="name">Prosecution Total Time</div>
+          <div class="hint" id="prosHint">Stopped</div>
+        </div>
+        <div class="time med" id="prosTime">00:00</div>
+        <div class="subline muted" id="prosSub">Ready</div>
+
+        <div class="controls">
+          <button class="start" id="prosStart">Start</button>
+          <button class="pause" id="prosPause">Pause</button>
+          <button class="reset" id="prosReset">Reset</button>
+        </div>
+
+        <!-- AMTA pools (Pros) -->
+        <div id="prosPools" style="display:none; margin-top:12px; display:none;"></div>
+      </section>
+
+      <!-- Objections Mode -->
+      <section class="dock span-2" aria-label="Objections Mode" id="cardObjections">
+        <div class="dock-top">
+          <div>
+            <div class="dock-title">Objections Mode</div>
+            <div class="dock-sub">Pauses the active speech + side + pool. Round time is separate.</div>
+          </div>
+          <div class="dock-sub" id="runningIndicator">All stopped</div>
+        </div>
+
+        <div class="dock-buttons">
+          <button class="objection" id="objectionPause">Pause current set</button>
+          <button class="resume" id="objectionResume">Resume current set</button>
+        </div>
+
+        <div class="small">Tip: Defense is always left, Prosecution always right.</div>
+      </section>
+
+      <!-- Round + Log -->
+      <section class="card span-2 hide-when-locked" aria-label="Total Round Time" id="cardRound">
+        <div class="label">
+          <div class="name">Total Round Time</div>
+          <div class="hint" id="roundHint">Stopped</div>
+        </div>
+        <div class="time med" id="roundTime">00:00</div>
+        <div class="subline muted" id="roundSub">Ready</div>
+
+        <div class="controls">
+          <button class="start" id="roundStart">Start</button>
+          <button class="pause" id="roundPause">Pause</button>
+          <button class="reset" id="roundReset">Reset</button>
+        </div>
+
+        <div class="row2" style="margin-top:10px;">
+          <button class="endround" id="endRoundBtn">End Round (save + stop)</button>
+          <button class="export" id="exportBtn">Export Round (2 CSVs)</button>
+        </div>
+
+        <div class="log" aria-label="Speech Log">
+          <div class="label" style="margin-top:6px;">
+            <div class="name">Speech Log</div>
+            <div class="hint" id="logHint">No speeches saved yet</div>
+          </div>
+
+          <ul class="loglist" id="logList"></ul>
+          <div class="small">Exports include an AMTA-style timesheet and an official event record.</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Options sheet -->
+  <div class="backdrop" id="backdrop" tabindex="-1" aria-hidden="true"></div>
+
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
+    <div class="sheet-header">
+      <div class="sheet-title" id="sheetTitle">Options</div>
+      <button class="sheet-close" id="closeSheetBtn" aria-label="Close options">Close</button>
     </div>
 
-    <button class="resetall" id="resetEverythingBtn" title="Reset all timers and clear speech log">Reset Everything</button>
+    <div class="sheet-body">
+      <div class="sheet-group">
+        <div class="group-title">Mode</div>
+        <select class="select" id="modeSelect" aria-label="Select mode">
+          <option value="free">Free Mode</option>
+          <option value="amta">AMTA Mode</option>
+          <option value="hs" disabled>High School Presets (soon)</option>
+          <option value="custom" disabled>Custom Mock Trial (soon)</option>
+        </select>
+        <div class="small" style="margin-top:8px;">
+          Switching modes mid-round can either reset the round or log the change.
+        </div>
+      </div>
 
-    <label class="chip" title="Toggle a more compact, thumb-friendly layout">
-      <input id="mobileToggle" type="checkbox" />
-      Mobile Layout
-    </label>
+      <div class="sheet-group">
+        <div class="group-title">Your side (Speech sync)</div>
+        <div class="segrow" role="radiogroup" aria-label="Select your side">
+          <label class="toggle"><input type="radio" name="role" value="def" id="roleDef"> Defense</label>
+          <label class="toggle"><input type="radio" name="role" value="pros" id="rolePros"> Prosecution</label>
+        </div>
+        <div class="small" style="margin-top:8px;">Layout always stays Defense left, Prosecution right.</div>
+      </div>
 
-    <label class="chip" title="Keep screen awake (if supported)">
-      <input id="wakeToggle" type="checkbox" />
-      Wake Lock
-    </label>
+      <div class="sheet-group">
+        <div class="group-title">Toggles</div>
+        <div class="row">
+          <label class="toggle"><input id="lockToggle" type="checkbox" /> Lock Layout</label>
+          <label class="toggle"><input id="mobileToggle" type="checkbox" /> Mobile Layout</label>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <label class="toggle"><input id="wakeToggle" type="checkbox" /> Wake Lock</label>
+        </div>
+      </div>
+
+      <div class="sheet-group">
+        <div class="group-title">Accessibility</div>
+        <div class="row">
+          <label class="toggle"><input id="hcToggle" type="checkbox" /> High Contrast</label>
+          <label class="toggle"><input id="lnToggle" type="checkbox" /> Large Numbers</label>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <label class="toggle"><input id="rtToggle" type="checkbox" /> Reduce Transparency</label>
+        </div>
+        <div class="small" style="margin-top:8px;">
+          Warnings are never color-only: you’ll always see a text label (e.g., “1:00 left” / “+00:32 over”).
+        </div>
+      </div>
+
+      <div class="sheet-group">
+        <div class="group-title">Round Controls</div>
+        <div class="btnrow two">
+          <button class="good" id="endRoundFromMenu">End Round</button>
+          <button class="danger" id="resetEverythingBtn">Reset Everything</button>
+        </div>
+        <div class="btnrow">
+          <button class="export" id="exportFromMenu">Export Round (2 CSVs)</button>
+        </div>
+      </div>
+
+      <div class="small">If you’re in Locked View, use Unlock to return here.</div>
+    </div>
   </div>
-</header>
 
-<div class="wrap">
-  <div class="grid">
-
-    <section class="card span-2" aria-label="Current Speech">
-      <div class="label">
-        <div class="name">Current Speech</div>
-        <div class="hint" id="speechHint">Stopped</div>
+  <!-- Confirm modal (mode switch) -->
+  <div class="modal" id="confirmModal" aria-hidden="true">
+    <div class="backdrop open" style="opacity:1; pointer-events:auto;"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h2 id="confirmTitle">Switch modes?</h2>
+      <p id="confirmText">Choose how to handle the current round.</p>
+      <div class="btnrow">
+        <button class="danger" id="confirmResetSwitch">Reset round and switch</button>
+        <button class="good" id="confirmLogSwitch">Switch mid-round (log it)</button>
+        <button id="confirmCancel">Cancel</button>
       </div>
-      <div class="time big" id="speechTime">00:00</div>
-      <div class="controls">
-        <button class="primary" id="speechStart">Start</button>
-        <button class="pause" id="speechPause">Pause</button>
-        <button class="reset" id="speechReset">Reset</button>
-      </div>
-      <div class="small">Speech Start/Pause syncs to your selected side. Speeches log on Speech Reset or End Round.</div>
-    </section>
-
-    <section class="card" aria-label="Prosecution Total Time">
-      <div class="label">
-        <div class="name">Prosecution Total Time</div>
-        <div class="hint" id="prosHint">Stopped</div>
-      </div>
-      <div class="time med" id="prosTime">00:00</div>
-      <div class="controls">
-        <button class="primary" id="prosStart">Start</button>
-        <button class="pause" id="prosPause">Pause</button>
-        <button class="reset" id="prosReset">Reset</button>
-      </div>
-    </section>
-
-    <section class="card" aria-label="Defense Total Time">
-      <div class="label">
-        <div class="name">Defense Total Time</div>
-        <div class="hint" id="defHint">Stopped</div>
-      </div>
-      <div class="time med" id="defTime">00:00</div>
-      <div class="controls">
-        <button class="primary" id="defStart">Start</button>
-        <button class="pause" id="defPause">Pause</button>
-        <button class="reset" id="defReset">Reset</button>
-      </div>
-    </section>
-
-    <section class="dock span-2" aria-label="Objections Mode">
-      <div class="dock-top">
-        <div>
-          <div class="dock-title">Objections Mode</div>
-          <div class="dock-sub">Pauses current set. Resumes only that set. Round time unaffected.</div>
-        </div>
-        <div class="dock-sub" id="runningIndicator">All stopped</div>
-      </div>
-
-      <div class="dock-buttons">
-        <button class="objection" id="objectionPause">Pause current speeches</button>
-        <button class="resume" id="objectionResume">Resume current speeches</button>
-      </div>
-    </section>
-
-    <section class="card span-2" aria-label="Total Round Time">
-      <div class="label">
-        <div class="name">Total Round Time</div>
-        <div class="hint" id="roundHint">Stopped</div>
-      </div>
-      <div class="time med" id="roundTime">00:00</div>
-      <div class="controls">
-        <button class="primary" id="roundStart">Start</button>
-        <button class="pause" id="roundPause">Pause</button>
-        <button class="reset" id="roundReset">Reset</button>
-      </div>
-
-      <div class="controls" style="margin-top:10px; grid-template-columns: 1fr;">
-        <button class="endround" id="endRoundBtn">End Round (save speech log)</button>
-      </div>
-
-      <div class="log" aria-label="Speech Log">
-        <div class="label" style="margin-top:6px;">
-          <div class="name">Speech Log</div>
-          <div class="hint" id="logHint">No speeches saved yet</div>
-        </div>
-
-        <div class="controls" style="grid-template-columns: 1fr auto;">
-          <button class="export" id="exportLogBtn">Export Log</button>
-          <button class="reset" id="clearLogBtn">Clear Log</button>
-        </div>
-
-        <ul class="loglist" id="logList"></ul>
-        <div class="small">Export copies a plain-text log to your clipboard.</div>
-      </div>
-    </section>
-
+    </div>
   </div>
-</div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-  // ---------- Mobile layout toggle ----------
-  const mobileToggle = document.getElementById('mobileToggle');
-  function applyMobileMode(enabled) {
-    document.body.classList.toggle('mobile-mode', !!enabled);
-    localStorage.setItem('mt_mobile_mode', enabled ? '1' : '0');
-    if (mobileToggle) mobileToggle.checked = !!enabled;
+/* =========================
+   Utilities
+========================= */
+function nowMs(){ return Date.now(); }
+function isoNow(){ return new Date().toISOString(); }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function formatMsToMMSS(ms){
+  ms = Math.max(0, ms);
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${pad2(minutes)}:${pad2(seconds)}`;
+}
+function formatOverageMs(msOver){
+  const s = Math.floor(Math.abs(msOver)/1000);
+  const m = Math.floor(s/60);
+  const r = s%60;
+  return `+${pad2(m)}:${pad2(r)} over`;
+}
+function csvEscape(v){
+  const s = String(v ?? '');
+  if (/[",\n]/.test(s)) return `"${s.replaceAll('"','""')}"`;
+  return s;
+}
+function downloadTextFile(filename, text, mime='text/plain'){
+  const blob = new Blob([text], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+async function shareFilesOrDownload(files){
+  // files: [{name, content, mime}]
+  const fileObjs = files.map(f => new File([f.content], f.name, {type: f.mime || 'text/csv'}));
+  const canShare = !!(navigator.share && navigator.canShare && navigator.canShare({ files: fileObjs }));
+  if (canShare){
+    await navigator.share({ files: fileObjs, title: 'Mock Trial Round Export' });
+    return true;
   }
-  try {
-    const saved = localStorage.getItem('mt_mobile_mode');
-    applyMobileMode(saved === '1');
-  } catch {
-    applyMobileMode(false);
+  // fallback: download one by one
+  for (const f of files){
+    downloadTextFile(f.name, f.content, f.mime || 'text/csv');
   }
-  if (mobileToggle) {
-    mobileToggle.addEventListener('change', () => applyMobileMode(mobileToggle.checked));
+  return false;
+}
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>el.classList.remove('show'), 1500);
+}
+
+/* =========================
+   Stopwatch (accurate, never auto-runs after refresh)
+========================= */
+class Stopwatch{
+  constructor(key){
+    this.key = key;
+    this.elapsedMs = 0;
+    this.running = false;
+    this.startedAtEpoch = 0;
+    this._loadElapsedOnly();
+  }
+  _loadElapsedOnly(){
+    try{
+      const raw = localStorage.getItem(this.key);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      this.elapsedMs = data.elapsedMs || 0;
+    }catch{}
+    this.running = false;
+    this.startedAtEpoch = 0;
+  }
+  _saveElapsedOnly(){
+    localStorage.setItem(this.key, JSON.stringify({ elapsedMs: this.elapsedMs }));
+  }
+  getElapsedMs(){
+    if (!this.running) return this.elapsedMs;
+    return this.elapsedMs + (nowMs() - this.startedAtEpoch);
+  }
+  start(){
+    if (this.running) return;
+    this.running = true;
+    this.startedAtEpoch = nowMs();
+  }
+  stop(){
+    if (!this.running) return;
+    this.elapsedMs = this.getElapsedMs();
+    this.running = false;
+    this.startedAtEpoch = 0;
+    this._saveElapsedOnly();
+  }
+  reset(){
+    this.elapsedMs = 0;
+    this.running = false;
+    this.startedAtEpoch = 0;
+    this._saveElapsedOnly();
+  }
+}
+
+/* =========================
+   State + storage
+========================= */
+const STORE = {
+  role: 'mt_role',
+  mode: 'mt_mode',
+  mobile: 'mt_mobile_mode',
+  lock: 'mt_lock',
+  wake: 'mt_wake',
+  a11y: 'mt_a11y',
+  speechLog: 'mt_speech_log',
+  eventLog: 'mt_event_log',
+  amta: 'mt_amta_state',
+};
+
+function loadJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw);
+  }catch{
+    return fallback;
+  }
+}
+function saveJSON(key, obj){
+  localStorage.setItem(key, JSON.stringify(obj));
+}
+
+function getRole(){
+  const r = localStorage.getItem(STORE.role);
+  if (r === 'def' || r === 'pros') return r;
+  return null;
+}
+function setRole(r){
+  localStorage.setItem(STORE.role, r);
+  document.getElementById('roleDef').checked = (r === 'def');
+  document.getElementById('rolePros').checked = (r === 'pros');
+}
+
+function getMode(){
+  const m = localStorage.getItem(STORE.mode);
+  if (m === 'free' || m === 'amta') return m;
+  return 'free';
+}
+function setMode(m){
+  localStorage.setItem(STORE.mode, m);
+  document.getElementById('modeSelect').value = m;
+}
+
+/* =========================
+   Timers
+========================= */
+const speech = new Stopwatch('mt_speech');
+const defTotal = new Stopwatch('mt_def_total');
+const prosTotal = new Stopwatch('mt_pros_total');
+const round = new Stopwatch('mt_round');
+
+/* AMTA pools (separate stopwatches) */
+const amtaPools = {
+  def: {
+    openClose: new Stopwatch('mt_amta_def_openclose'),
+    direct:    new Stopwatch('mt_amta_def_direct'),
+    cross:     new Stopwatch('mt_amta_def_cross'),
+    rebuttal:  new Stopwatch('mt_amta_def_rebuttal') // for cap warning only
+  },
+  pros: {
+    openClose: new Stopwatch('mt_amta_pros_openclose'),
+    direct:    new Stopwatch('mt_amta_pros_direct'),
+    cross:     new Stopwatch('mt_amta_pros_cross'),
+    rebuttal:  new Stopwatch('mt_amta_pros_rebuttal')
+  }
+};
+
+const AMTA_CAPS_MS = {
+  openClose: 14 * 60 * 1000,
+  direct: 25 * 60 * 1000,
+  cross: 25 * 60 * 1000,
+  rebuttal: 5 * 60 * 1000
+};
+
+let currentSegment = 'opening'; // AMTA only
+let currentPoolKey = 'openClose'; // derived
+let pausedSet = { speech:false, side:null, poolKey:null, seg:null }; // for objections resume
+
+/* =========================
+   Logging (speech records + official record)
+========================= */
+let speechLog = loadJSON(STORE.speechLog, []);  // human records
+let eventLog  = loadJSON(STORE.eventLog, []);   // forensic
+
+function logEvent(type, extra={}){
+  const snapshot = {
+    t: isoNow(),
+    type,
+    mode: getMode(),
+    role: getRole() || 'unselected',
+    seg: (getMode()==='amta' ? currentSegment : 'free'),
+    ...extra,
+    ms: {
+      speech: speech.getElapsedMs(),
+      defTotal: defTotal.getElapsedMs(),
+      prosTotal: prosTotal.getElapsedMs(),
+      round: round.getElapsedMs(),
+      ...(getMode()==='amta' ? {
+        def_openClose: amtaPools.def.openClose.getElapsedMs(),
+        def_direct: amtaPools.def.direct.getElapsedMs(),
+        def_cross: amtaPools.def.cross.getElapsedMs(),
+        def_rebuttal: amtaPools.def.rebuttal.getElapsedMs(),
+        pros_openClose: amtaPools.pros.openClose.getElapsedMs(),
+        pros_direct: amtaPools.pros.direct.getElapsedMs(),
+        pros_cross: amtaPools.pros.cross.getElapsedMs(),
+        pros_rebuttal: amtaPools.pros.rebuttal.getElapsedMs(),
+      } : {})
+    }
+  };
+  eventLog.push(snapshot);
+  saveJSON(STORE.eventLog, eventLog);
+}
+
+let objectionStats = loadJSON('mt_objection_stats', { count:0, ms:0, running:false, startedAt:0 });
+function objectionStart(){
+  if (objectionStats.running) return;
+  objectionStats.running = true;
+  objectionStats.startedAt = nowMs();
+  objectionStats.count += 1;
+  saveJSON('mt_objection_stats', objectionStats);
+}
+function objectionStop(){
+  if (!objectionStats.running) return;
+  objectionStats.ms += (nowMs() - objectionStats.startedAt);
+  objectionStats.running = false;
+  objectionStats.startedAt = 0;
+  saveJSON('mt_objection_stats', objectionStats);
+}
+function getObjectionMs(){
+  if (!objectionStats.running) return objectionStats.ms;
+  return objectionStats.ms + (nowMs() - objectionStats.startedAt);
+}
+
+/* record objection time within a speech */
+let speechObjectionStartMs = 0; // total objection ms at speech start
+
+function maybeLogCurrentSpeech(reason){
+  const ms = speech.getElapsedMs();
+  if (ms < 1000) return false;
+
+  const mode = getMode();
+  const role = getRole() || 'unselected';
+  const seg = (mode==='amta' ? currentSegment : 'free');
+  const pool = (mode==='amta' ? currentPoolKey : 'none');
+
+  const objectionMsNow = getObjectionMs();
+  const objectionDuringSpeech = Math.max(0, objectionMsNow - speechObjectionStartMs);
+
+  const record = {
+    at: isoNow(),
+    reason,
+    mode,
+    side: role,
+    segment: seg,
+    pool,
+    durationSec: Math.floor(ms/1000),
+    objectionMs: objectionDuringSpeech,
+    objectionCount: objectionStats.count, // total so far (still useful)
+  };
+
+  // AMTA overage / caps
+  if (mode === 'amta' && (role === 'def' || role === 'pros')){
+    const pools = amtaPools[role];
+    const used = pools[pool].getElapsedMs();
+    const cap = AMTA_CAPS_MS[pool];
+    const overMs = Math.max(0, used - cap);
+    record.capSec = Math.floor(cap/1000);
+    record.usedPoolSec = Math.floor(used/1000);
+    record.overageSec = Math.floor(overMs/1000);
   }
 
-  // ---------- Auto-hide header immediately on scroll down; show on scroll up ----------
-  (function autoHideHeader() {
-    const header = document.querySelector('header');
-    if (!header) return;
+  speechLog.push(record);
+  saveJSON(STORE.speechLog, speechLog);
+  return true;
+}
 
-    header.classList.add('auto-hide');
+/* =========================
+   Mode UI (AMTA pools rendering)
+========================= */
+function poolLabel(key){
+  if (key === 'openClose') return 'Opening/Closing Pool';
+  if (key === 'direct') return 'Direct/Redirect Pool';
+  if (key === 'cross') return 'Cross/Recross Pool';
+  return key;
+}
+function poolCapLabel(key){
+  const cap = AMTA_CAPS_MS[key] || 0;
+  return formatMsToMMSS(cap);
+}
 
-    let lastY = window.scrollY || 0;
-    let ticking = false;
-    const DELTA = 2;
+function renderPools(side){
+  // side: 'def'|'pros'
+  const wrap = document.createElement('div');
+  wrap.style.display = 'grid';
+  wrap.style.gap = '10px';
 
-    function onScroll() {
-      const y = window.scrollY || 0;
-      const dy = y - lastY;
+  // order: openClose, direct, cross, rebuttal indicator shown inside openClose line via segment and separate label? We'll show rebuttal used as extra line.
+  const poolKeys = ['openClose','direct','cross'];
+  for (const pk of poolKeys){
+    const pools = amtaPools[side];
+    const used = pools[pk].getElapsedMs();
+    const cap = AMTA_CAPS_MS[pk];
+    const remaining = cap - used;
 
-      if (y <= 2) {
-        header.classList.remove('is-hidden');
-        lastY = y;
-        ticking = false;
-        return;
-      }
+    const item = document.createElement('div');
+    item.style.border = '1px solid rgba(255,255,255,0.12)';
+    item.style.background = 'rgba(255,255,255,0.05)';
+    item.style.borderRadius = '16px';
+    item.style.padding = '10px';
+    item.style.position = 'relative';
 
-      if (Math.abs(dy) < DELTA) {
-        ticking = false;
-        return;
-      }
+    const top = document.createElement('div');
+    top.style.display = 'flex';
+    top.style.justifyContent = 'space-between';
+    top.style.alignItems = 'baseline';
+    top.style.gap = '10px';
 
-      if (dy > 0) header.classList.add('is-hidden');
-      else header.classList.remove('is-hidden');
+    const name = document.createElement('div');
+    name.style.fontSize = '11px';
+    name.style.fontWeight = '950';
+    name.style.letterSpacing = '.2px';
+    name.style.textTransform = 'uppercase';
+    name.style.opacity = '.90';
+    name.textContent = poolLabel(pk);
 
-      lastY = y;
-      ticking = false;
+    const capEl = document.createElement('div');
+    capEl.style.fontSize = '11px';
+    capEl.style.fontWeight = '850';
+    capEl.style.opacity = '.74';
+    capEl.textContent = `Cap ${poolCapLabel(pk)}`;
+
+    top.appendChild(name);
+    top.appendChild(capEl);
+
+    const time = document.createElement('div');
+    time.style.marginTop = '6px';
+    time.style.fontVariantNumeric = 'tabular-nums';
+    time.style.letterSpacing = '.5px';
+    time.style.fontWeight = '980';
+    time.style.fontSize = '24px';
+    time.textContent = formatMsToMMSS(used);
+
+    const sub = document.createElement('div');
+    sub.className = 'subline muted';
+    sub.style.marginTop = '2px';
+
+    // warning/over labels under the timer
+    if (remaining <= 0){
+      sub.textContent = formatOverageMs(remaining);
+    } else if (remaining <= 60*1000){
+      sub.textContent = `${formatMsToMMSS(remaining)} left`;
+    } else {
+      sub.textContent = `${formatMsToMMSS(remaining)} left`;
+      sub.style.opacity = .70;
+      sub.style.fontWeight = 800;
     }
 
-    window.addEventListener('scroll', () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(onScroll);
-    }, { passive: true });
+    // Card-ish highlight for warning/over
+    if (remaining <= 0){
+      item.style.borderColor = 'rgba(146,40,51,0.50)';
+      item.style.boxShadow = '0 0 16px rgba(146,40,51,0.14)';
+    } else if (remaining <= 60*1000){
+      item.style.borderColor = 'rgba(201,162,58,0.50)';
+      item.style.boxShadow = '0 0 16px rgba(201,162,58,0.12)';
+    }
 
-    // Tap near top edge to reveal (nice on iPhone)
-    window.addEventListener('touchstart', (e) => {
-      const y = e.touches && e.touches[0] ? e.touches[0].clientY : 9999;
-      if (y < 70) header.classList.remove('is-hidden');
-    }, { passive: true });
-  })();
+    item.appendChild(top);
+    item.appendChild(time);
+    item.appendChild(sub);
 
-  // ---------- Helpers ----------
-  function formatMsToMMSS(ms) {
-    ms = Math.max(0, ms);
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    // Rebuttal info lives under openClose pool
+    if (pk === 'openClose'){
+      const rebUsed = pools.rebuttal.getElapsedMs();
+      const rebCap = AMTA_CAPS_MS.rebuttal;
+      const rebOver = Math.max(0, rebUsed - rebCap);
+
+      const reb = document.createElement('div');
+      reb.style.marginTop = '8px';
+      reb.style.paddingTop = '8px';
+      reb.style.borderTop = '1px solid rgba(255,255,255,0.10)';
+      reb.style.display = 'flex';
+      reb.style.justifyContent = 'space-between';
+      reb.style.alignItems = 'baseline';
+      reb.style.gap = '10px';
+      reb.style.fontVariantNumeric = 'tabular-nums';
+
+      const left = document.createElement('div');
+      left.style.fontSize = '11px';
+      left.style.fontWeight = '950';
+      left.style.opacity = '.88';
+      left.textContent = 'Rebuttal Used (max 05:00)';
+
+      const right = document.createElement('div');
+      right.style.fontSize = '12px';
+      right.style.fontWeight = '950';
+      right.textContent = formatMsToMMSS(rebUsed) + (rebOver>0 ? `  ${formatOverageMs(-rebOver)}` : '');
+
+      reb.appendChild(left);
+      reb.appendChild(right);
+      item.appendChild(reb);
+    }
+
+    wrap.appendChild(item);
   }
 
-  // ---------- Stopwatch (accurate; never auto-runs after refresh) ----------
-  class Stopwatch {
-    constructor(key) {
-      this.key = key;
-      this.elapsedMs = 0;
-      this.running = false;
-      this.startedAtEpoch = 0;
-      this._loadElapsedOnly();
-    }
+  return wrap;
+}
 
-    _loadElapsedOnly() {
-      try {
-        const raw = localStorage.getItem(this.key);
-        if (!raw) return;
-        const data = JSON.parse(raw);
-        this.elapsedMs = data.elapsedMs || 0;
-      } catch {}
-      this.running = false;
-      this.startedAtEpoch = 0;
-    }
+function refreshAmtaPoolUI(){
+  const mode = getMode();
+  const defPoolsEl = document.getElementById('defPools');
+  const prosPoolsEl = document.getElementById('prosPools');
 
-    _saveElapsedOnly() {
-      localStorage.setItem(this.key, JSON.stringify({ elapsedMs: this.elapsedMs }));
-    }
+  if (mode !== 'amta'){
+    defPoolsEl.style.display = 'none';
+    prosPoolsEl.style.display = 'none';
+    defPoolsEl.innerHTML = '';
+    prosPoolsEl.innerHTML = '';
+    return;
+  }
 
-    getElapsedMs() {
-      if (!this.running) return this.elapsedMs;
-      return this.elapsedMs + (Date.now() - this.startedAtEpoch);
-    }
+  defPoolsEl.style.display = 'block';
+  prosPoolsEl.style.display = 'block';
 
-    start() {
-      if (this.running) return;
-      this.running = true;
-      this.startedAtEpoch = Date.now();
-    }
+  defPoolsEl.innerHTML = '';
+  prosPoolsEl.innerHTML = '';
 
-    stop() {
-      if (!this.running) return;
-      this.elapsedMs = this.getElapsedMs();
-      this.running = false;
-      this.startedAtEpoch = 0;
-      this._saveElapsedOnly();
-    }
+  defPoolsEl.appendChild(renderPools('def'));
+  prosPoolsEl.appendChild(renderPools('pros'));
+}
 
-    reset() {
-      this.elapsedMs = 0;
-      this.running = false;
-      this.startedAtEpoch = 0;
-      this._saveElapsedOnly();
+/* =========================
+   Mode switching prompt
+========================= */
+let pendingMode = null;
+const confirmModal = document.getElementById('confirmModal');
+
+function anyTimerRunning(){
+  return speech.running || defTotal.running || prosTotal.running || round.running ||
+    amtaPools.def.openClose.running || amtaPools.def.direct.running || amtaPools.def.cross.running || amtaPools.def.rebuttal.running ||
+    amtaPools.pros.openClose.running || amtaPools.pros.direct.running || amtaPools.pros.cross.running || amtaPools.pros.rebuttal.running;
+}
+
+function showConfirmSwitch(newMode){
+  pendingMode = newMode;
+  confirmModal.classList.add('open');
+  confirmModal.setAttribute('aria-hidden','false');
+  logEvent('modeSwitchPrompt', { to:newMode });
+}
+function closeConfirm(){
+  confirmModal.classList.remove('open');
+  confirmModal.setAttribute('aria-hidden','true');
+  pendingMode = null;
+}
+
+function applyMode(newMode, resetRound){
+  const oldMode = getMode();
+
+  if (resetRound) resetEverythingCore(false); // no toast here
+  setMode(newMode);
+
+  // mode changes affect UI pieces
+  document.getElementById('segmentBar').style.display = (newMode === 'amta') ? 'flex' : 'none';
+
+  // If switching without reset, record an official event
+  if (!resetRound){
+    logEvent('modeChange', { from: oldMode, to: newMode });
+  } else {
+    logEvent('modeChangeReset', { from: oldMode, to: newMode });
+  }
+
+  refreshAmtaPoolUI();
+  render();
+}
+
+/* =========================
+   Segment selector (AMTA)
+========================= */
+function segToPool(seg){
+  if (seg === 'direct') return 'direct';
+  if (seg === 'cross') return 'cross';
+  // opening, closing, rebuttal -> openClose
+  return 'openClose';
+}
+function setSegment(seg){
+  currentSegment = seg;
+  currentPoolKey = segToPool(seg);
+  const btns = document.querySelectorAll('.segbtn');
+  btns.forEach(b=>{
+    const on = (b.dataset.seg === seg);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  logEvent('segmentSelect', { segment: seg, poolKey: currentPoolKey });
+  render();
+}
+
+/* =========================
+   Mutual exclusion (def/pros never run together)
+========================= */
+function startDefense(){
+  if (prosTotal.running) prosTotal.stop();
+  defTotal.start();
+}
+function startPros(){
+  if (defTotal.running) defTotal.stop();
+  prosTotal.start();
+}
+
+/* =========================
+   Speech start/pause logic w/ AMTA pooling
+========================= */
+function startPoolForRole(role){
+  if (getMode() !== 'amta') return;
+
+  if (role !== 'def' && role !== 'pros') return;
+  const pools = amtaPools[role];
+  pools[currentPoolKey].start();
+
+  // rebuttal cap tracking (in addition to openClose usage)
+  if (currentSegment === 'rebuttal'){
+    pools.rebuttal.start();
+  }
+}
+
+function stopPoolForRole(role){
+  if (getMode() !== 'amta') return;
+  if (role !== 'def' && role !== 'pros') return;
+  const pools = amtaPools[role];
+  pools.openClose.stop();
+  pools.direct.stop();
+  pools.cross.stop();
+  pools.rebuttal.stop();
+}
+
+function speechStartSynced(){
+  const role = getRole();
+  speech.start();
+  logEvent('speechStart', { side: role || 'unselected' });
+
+  // Start objection baseline for this speech
+  speechObjectionStartMs = getObjectionMs();
+
+  if (role === 'def'){
+    startDefense();
+    startPoolForRole('def');
+  } else if (role === 'pros'){
+    startPros();
+    startPoolForRole('pros');
+  }
+}
+
+function speechPauseSynced(){
+  const role = getRole();
+  speech.stop();
+  logEvent('speechPause', { side: role || 'unselected' });
+
+  if (role === 'def'){
+    defTotal.stop();
+    stopPoolForRole('def');
+  } else if (role === 'pros'){
+    prosTotal.stop();
+    stopPoolForRole('pros');
+  }
+}
+
+/* =========================
+   Objections mode (pause/resume active set)
+========================= */
+function objectionPause(){
+  // snapshot running set
+  const role = getRole();
+  pausedSet = {
+    speech: speech.running,
+    side: (defTotal.running ? 'def' : (prosTotal.running ? 'pros' : null)),
+    poolKey: (getMode()==='amta' ? currentPoolKey : null),
+    seg: (getMode()==='amta' ? currentSegment : null),
+  };
+
+  objectionStart();
+  logEvent('objectionPause', { pausedSet });
+
+  // stop active
+  if (speech.running) speech.stop();
+  if (defTotal.running) defTotal.stop();
+  if (prosTotal.running) prosTotal.stop();
+
+  if (getMode()==='amta'){
+    // stop both sides pools to be safe (only one should be running)
+    stopPoolForRole('def');
+    stopPoolForRole('pros');
+  }
+}
+
+function objectionResume(){
+  objectionStop();
+  logEvent('objectionResume', { resumeSet: pausedSet });
+
+  // resume only what was running
+  if (pausedSet.speech) speech.start();
+
+  if (pausedSet.side === 'def'){
+    startDefense();
+    if (getMode()==='amta'){
+      if (pausedSet.seg) setSegment(pausedSet.seg);
+      startPoolForRole('def');
+    }
+  }
+  if (pausedSet.side === 'pros'){
+    startPros();
+    if (getMode()==='amta'){
+      if (pausedSet.seg) setSegment(pausedSet.seg);
+      startPoolForRole('pros');
     }
   }
 
-  // ---------- Timers ----------
-  const speech = new Stopwatch('mt_speech');
-  const pros   = new Stopwatch('mt_pros');
-  const def    = new Stopwatch('mt_def');
-  const round  = new Stopwatch('mt_round');
+  pausedSet = { speech:false, side:null, poolKey:null, seg:null };
+}
+
+/* =========================
+   Reset / End round
+========================= */
+function stopAllTimers(){
+  speech.stop();
+  defTotal.stop();
+  prosTotal.stop();
+  round.stop();
+  // stop all pools
+  stopPoolForRole('def');
+  stopPoolForRole('pros');
+}
+
+function resetEverythingCore(showToast=true){
+  stopAllTimers();
+
+  speech.reset();
+  defTotal.reset();
+  prosTotal.reset();
+  round.reset();
+
+  // reset pools
+  for (const side of ['def','pros']){
+    amtaPools[side].openClose.reset();
+    amtaPools[side].direct.reset();
+    amtaPools[side].cross.reset();
+    amtaPools[side].rebuttal.reset();
+  }
+
+  // logs
+  speechLog = [];
+  eventLog = [];
+  saveJSON(STORE.speechLog, speechLog);
+  saveJSON(STORE.eventLog, eventLog);
+
+  // objections stats
+  objectionStats = { count:0, ms:0, running:false, startedAt:0 };
+  saveJSON('mt_objection_stats', objectionStats);
+  speechObjectionStartMs = 0;
+
+  logEvent('resetEverything', {});
+  renderLog();
+  refreshAmtaPoolUI();
+  render();
+
+  if (showToast) toast('Reset.');
+}
+
+function endRound(){
+  // log speech if in progress/time exists
+  maybeLogCurrentSpeech('end_round');
+
+  stopAllTimers();
+  logEvent('endRound', {});
+
+  renderLog();
+  refreshAmtaPoolUI();
+  render();
+  toast('Round ended.');
+}
+
+/* =========================
+   Exports (2 CSVs, one button)
+========================= */
+function filenameDate(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = pad2(d.getMonth()+1);
+  const dd = pad2(d.getDate());
+  return `${yyyy}-${mm}-${dd}`;
+}
+function buildAmtaTimesheetCSV(){
+  const mode = getMode();
+  const date = filenameDate();
+
+  // Even in Free mode, we can still export a "timesheet" shaped summary (just totals).
+  const rows = [];
+  rows.push([
+    'Mode','Date',
+    'Defense Total Used','Prosecution Total Used',
+    'Defense Objections (count)','Defense/Pros Objections Total',
+    'Round Time'
+  ]);
+
+  rows.push([
+    mode,
+    date,
+    formatMsToMMSS(defTotal.getElapsedMs()),
+    formatMsToMMSS(prosTotal.getElapsedMs()),
+    String(objectionStats.count),
+    formatMsToMMSS(getObjectionMs()),
+    formatMsToMMSS(round.getElapsedMs())
+  ]);
+
+  if (mode === 'amta'){
+    rows.push([]);
+    rows.push(['AMTA Pools','Cap','Defense Used','Defense Remaining/Over','Prosecution Used','Prosecution Remaining/Over']);
+
+    const poolKeys = ['openClose','direct','cross'];
+    for (const pk of poolKeys){
+      const cap = AMTA_CAPS_MS[pk];
+      const defUsed = amtaPools.def[pk].getElapsedMs();
+      const prosUsed = amtaPools.pros[pk].getElapsedMs();
+
+      const defRem = cap - defUsed;
+      const prosRem = cap - prosUsed;
+
+      rows.push([
+        poolLabel(pk),
+        formatMsToMMSS(cap),
+        formatMsToMMSS(defUsed),
+        (defRem >= 0 ? `${formatMsToMMSS(defRem)} left` : formatOverageMs(defRem)),
+        formatMsToMMSS(prosUsed),
+        (prosRem >= 0 ? `${formatMsToMMSS(prosRem)} left` : formatOverageMs(prosRem)),
+      ]);
+    }
+
+    // rebuttal
+    rows.push([]);
+    rows.push(['Rebuttal','Cap','Defense Used','Defense Over','Prosecution Used','Prosecution Over']);
+    const defReb = amtaPools.def.rebuttal.getElapsedMs();
+    const prosReb = amtaPools.pros.rebuttal.getElapsedMs();
+    rows.push([
+      'Rebuttal',
+      formatMsToMMSS(AMTA_CAPS_MS.rebuttal),
+      formatMsToMMSS(defReb),
+      (defReb > AMTA_CAPS_MS.rebuttal ? formatOverageMs(AMTA_CAPS_MS.rebuttal - defReb) : '0:00'),
+      formatMsToMMSS(prosReb),
+      (prosReb > AMTA_CAPS_MS.rebuttal ? formatOverageMs(AMTA_CAPS_MS.rebuttal - prosReb) : '0:00')
+    ]);
+  }
+
+  // Convert to CSV
+  return rows.map(r => r.map(csvEscape).join(',')).join('\n');
+}
+
+function buildOfficialRoundRecordCSV(){
+  const cols = [
+    'timestamp','type','mode','role','segment','poolKey',
+    'speech_ms','defTotal_ms','prosTotal_ms','round_ms',
+    'def_openClose_ms','def_direct_ms','def_cross_ms','def_rebuttal_ms',
+    'pros_openClose_ms','pros_direct_ms','pros_cross_ms','pros_rebuttal_ms'
+  ];
+
+  const mode = getMode();
+  const lines = [cols.join(',')];
+
+  for (const e of eventLog){
+    const ms = e.ms || {};
+    const row = [
+      e.t, e.type, e.mode, e.role, e.seg, (e.poolKey || ''),
+      ms.speech ?? '', ms.defTotal ?? '', ms.prosTotal ?? '', ms.round ?? '',
+      (mode==='amta' ? (ms.def_openClose ?? '') : ''),
+      (mode==='amta' ? (ms.def_direct ?? '') : ''),
+      (mode==='amta' ? (ms.def_cross ?? '') : ''),
+      (mode==='amta' ? (ms.def_rebuttal ?? '') : ''),
+      (mode==='amta' ? (ms.pros_openClose ?? '') : ''),
+      (mode==='amta' ? (ms.pros_direct ?? '') : ''),
+      (mode==='amta' ? (ms.pros_cross ?? '') : ''),
+      (mode==='amta' ? (ms.pros_rebuttal ?? '') : '')
+    ].map(csvEscape);
+
+    lines.push(row.join(','));
+  }
+
+  return lines.join('\n');
+}
+
+async function exportRound(){
+  // Ensure current speech is captured if non-zero and running (but don't force stop)
+  // We won't auto-stop anything here to avoid surprises.
+  const date = filenameDate();
+
+  const amtaName = `AMTA_Timesheet_${date}.csv`;
+  const recordName = `Official_Round_Record_${date}.csv`;
+
+  const amtaCSV = buildAmtaTimesheetCSV();
+  const recordCSV = buildOfficialRoundRecordCSV();
+
+  try{
+    const shared = await shareFilesOrDownload([
+      { name: amtaName, content: amtaCSV, mime:'text/csv' },
+      { name: recordName, content: recordCSV, mime:'text/csv' },
+    ]);
+    toast(shared ? 'Exported via Share.' : 'Exported (downloaded).');
+  }catch{
+    // fallback
+    downloadTextFile(amtaName, amtaCSV, 'text/csv');
+    downloadTextFile(recordName, recordCSV, 'text/csv');
+    toast('Exported (downloaded).');
+  }
+}
+
+/* =========================
+   Log UI (speech records)
+========================= */
+const logList = document.getElementById('logList');
+const logHint = document.getElementById('logHint');
+
+function renderLog(){
+  logList.innerHTML = '';
+  if (!speechLog.length){
+    logHint.textContent = 'No speeches saved yet';
+    return;
+  }
+  logHint.textContent = `${speechLog.length} speech${speechLog.length===1?'':'es'} saved`;
+
+  speechLog.forEach((item, idx)=>{
+    const li = document.createElement('li');
+    li.className = 'logitem';
+
+    const left = document.createElement('div');
+    const side = (item.side==='def' ? 'Defense' : (item.side==='pros' ? 'Prosecution' : 'Unselected'));
+    const seg = (item.mode==='amta' ? item.segment : 'Free');
+    left.innerHTML = `<div class="meta">Speech ${idx+1} • ${side} • ${seg}</div>`;
+
+    const right = document.createElement('div');
+    right.textContent = formatMsToMMSS(item.durationSec*1000);
+
+    li.appendChild(left);
+    li.appendChild(right);
+    logList.appendChild(li);
+  });
+}
+
+/* =========================
+   Render (cards states + indicators)
+========================= */
+const el = {
+  speechTime: document.getElementById('speechTime'),
+  defTime: document.getElementById('defTime'),
+  prosTime: document.getElementById('prosTime'),
+  roundTime: document.getElementById('roundTime'),
+
+  speechHint: document.getElementById('speechHint'),
+  defHint: document.getElementById('defHint'),
+  prosHint: document.getElementById('prosHint'),
+  roundHint: document.getElementById('roundHint'),
+
+  speechSub: document.getElementById('speechSub'),
+  defSub: document.getElementById('defSub'),
+  prosSub: document.getElementById('prosSub'),
+  roundSub: document.getElementById('roundSub'),
+
+  runningIndicator: document.getElementById('runningIndicator'),
+
+  cardSpeech: document.getElementById('cardSpeech'),
+  cardDef: document.getElementById('cardDef'),
+  cardPros: document.getElementById('cardPros'),
+  cardRound: document.getElementById('cardRound'),
+  cardObjections: document.getElementById('cardObjections'),
+};
+
+function setCardState(card, state){
+  card.classList.remove('state-running','state-warn','state-over');
+  if (state) card.classList.add(state);
+}
+
+function computePoolState(side){
+  if (getMode() !== 'amta') return null;
+
+  // highlight the CURRENT pool for that side only when that side is running
+  const pools = amtaPools[side];
+  const pk = currentPoolKey;
+  const used = pools[pk].getElapsedMs();
+  const cap = AMTA_CAPS_MS[pk];
+  const rem = cap - used;
+
+  if (rem <= 0) return 'state-over';
+  if (rem <= 60*1000) return 'state-warn';
+  return 'state-running';
+}
+
+function render(){
+  el.speechTime.textContent = formatMsToMMSS(speech.getElapsedMs());
+  el.defTime.textContent = formatMsToMMSS(defTotal.getElapsedMs());
+  el.prosTime.textContent = formatMsToMMSS(prosTotal.getElapsedMs());
+  el.roundTime.textContent = formatMsToMMSS(round.getElapsedMs());
+
+  el.speechHint.textContent = speech.running ? 'Running' : 'Stopped';
+  el.defHint.textContent = defTotal.running ? 'Running' : 'Stopped';
+  el.prosHint.textContent = prosTotal.running ? 'Running' : 'Stopped';
+  el.roundHint.textContent = round.running ? 'Running' : 'Stopped';
+
+  el.speechSub.textContent = (getMode()==='amta')
+    ? `Segment: ${currentSegment[0].toUpperCase()+currentSegment.slice(1)}`
+    : 'Ready';
+
+  el.defSub.textContent = (getMode()==='amta') ? 'AMTA pools below' : 'Ready';
+  el.prosSub.textContent = (getMode()==='amta') ? 'AMTA pools below' : 'Ready';
+  el.roundSub.textContent = 'Ready';
+
+  // Running indicator
+  const running = [];
+  if (speech.running) running.push('Speech');
+  if (defTotal.running) running.push('Defense');
+  if (prosTotal.running) running.push('Prosecution');
+  if (round.running) running.push('Round');
+  if (objectionStats.running) running.push('Objection');
+  el.runningIndicator.textContent = running.length ? `Running: ${running.join(', ')}` : 'All stopped';
+
+  // Card glow states
+  // Speech card: running if speech running
+  setCardState(el.cardSpeech, speech.running ? 'state-running' : null);
+
+  // Defense/Pros cards: if side running use running state; in AMTA, apply warn/over based on current pool for the running side
+  if (defTotal.running && getMode()==='amta'){
+    setCardState(el.cardDef, computePoolState('def'));
+  } else {
+    setCardState(el.cardDef, defTotal.running ? 'state-running' : null);
+  }
+
+  if (prosTotal.running && getMode()==='amta'){
+    setCardState(el.cardPros, computePoolState('pros'));
+  } else {
+    setCardState(el.cardPros, prosTotal.running ? 'state-running' : null);
+  }
+
+  setCardState(el.cardRound, round.running ? 'state-running' : null);
+
+  // Objections dock: show over-ish state when objection running
+  if (objectionStats.running){
+    el.cardObjections.style.borderColor = 'rgba(146,40,51,0.44)';
+    el.cardObjections.style.boxShadow = '0 0 22px rgba(146,40,51,0.16), 0 18px 40px rgba(0,0,0,0.48)';
+  } else {
+    el.cardObjections.style.borderColor = 'rgba(255,255,255,0.12)';
+    el.cardObjections.style.boxShadow = '0 18px 40px rgba(0,0,0,0.48)';
+  }
+
+  // Re-render AMTA pools (lightweight enough at 250ms? We'll do it slower)
+}
+setInterval(render, 200);
+
+/* AMTA pool UI refresh cadence (slower) */
+setInterval(()=>{ if (getMode()==='amta') refreshAmtaPoolUI(); }, 800);
+
+/* =========================
+   Wire up UI events
+========================= */
+// Segment buttons
+document.querySelectorAll('.segbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    setSegment(btn.dataset.seg);
+  });
+});
+
+// Speech buttons
+document.getElementById('speechStart').addEventListener('click', speechStartSynced);
+document.getElementById('speechPause').addEventListener('click', speechPauseSynced);
+document.getElementById('speechReset').addEventListener('click', ()=>{
+  logEvent('speechReset', {});
+  maybeLogCurrentSpeech('speech_reset');
+  speech.reset();
+  renderLog();
+  render();
+  toast('Speech saved.');
+});
+
+// Side buttons (manual)
+document.getElementById('defStart').addEventListener('click', ()=>{
+  logEvent('defStartManual', {});
+  startDefense();
+});
+document.getElementById('defPause').addEventListener('click', ()=>{
+  logEvent('defPauseManual', {});
+  defTotal.stop();
+  if (getMode()==='amta') stopPoolForRole('def');
+});
+document.getElementById('defReset').addEventListener('click', ()=>{
+  logEvent('defResetManual', {});
+  defTotal.reset();
+  if (getMode()==='amta'){
+    amtaPools.def.openClose.reset();
+    amtaPools.def.direct.reset();
+    amtaPools.def.cross.reset();
+    amtaPools.def.rebuttal.reset();
+  }
+  refreshAmtaPoolUI();
+});
+
+document.getElementById('prosStart').addEventListener('click', ()=>{
+  logEvent('prosStartManual', {});
+  startPros();
+});
+document.getElementById('prosPause').addEventListener('click', ()=>{
+  logEvent('prosPauseManual', {});
+  prosTotal.stop();
+  if (getMode()==='amta') stopPoolForRole('pros');
+});
+document.getElementById('prosReset').addEventListener('click', ()=>{
+  logEvent('prosResetManual', {});
+  prosTotal.reset();
+  if (getMode()==='amta'){
+    amtaPools.pros.openClose.reset();
+    amtaPools.pros.direct.reset();
+    amtaPools.pros.cross.reset();
+    amtaPools.pros.rebuttal.reset();
+  }
+  refreshAmtaPoolUI();
+});
+
+// Round buttons
+document.getElementById('roundStart').addEventListener('click', ()=>{ logEvent('roundStart',{}); round.start(); });
+document.getElementById('roundPause').addEventListener('click', ()=>{ logEvent('roundPause',{}); round.stop(); });
+document.getElementById('roundReset').addEventListener('click', ()=>{ logEvent('roundReset',{}); round.reset(); });
+
+// Objections buttons
+document.getElementById('objectionPause').addEventListener('click', objectionPause);
+document.getElementById('objectionResume').addEventListener('click', objectionResume);
+
+// End round / export
+document.getElementById('endRoundBtn').addEventListener('click', endRound);
+document.getElementById('exportBtn').addEventListener('click', exportRound);
+
+// Menu duplicates
+document.getElementById('endRoundFromMenu').addEventListener('click', ()=>{
+  closeSheet();
+  endRound();
+});
+document.getElementById('exportFromMenu').addEventListener('click', async ()=>{
+  closeSheet();
+  await exportRound();
+});
+document.getElementById('resetEverythingBtn').addEventListener('click', ()=>{
+  closeSheet();
+  if (confirm('Reset everything? This clears timers and logs.')) resetEverythingCore(true);
+});
+
+// Unlock button
+document.getElementById('unlockBtn').addEventListener('click', ()=>{
+  setLockLayout(false);
+  openSheet();
+});
+
+/* =========================
+   Options sheet (accessible modal-ish)
+========================= */
+const optionsBtn = document.getElementById('optionsBtn');
+const sheet = document.getElementById('sheet');
+const backdrop = document.getElementById('backdrop');
+const closeSheetBtn = document.getElementById('closeSheetBtn');
+
+let lastFocus = null;
+
+function openSheet(){
+  lastFocus = document.activeElement;
+  sheet.classList.add('open');
+  backdrop.classList.add('open');
+  sheet.setAttribute('aria-hidden','false');
+  backdrop.setAttribute('aria-hidden','false');
+  optionsBtn.setAttribute('aria-expanded','true');
+  document.body.style.overflow = 'hidden';
+  // focus first control
+  setTimeout(()=>document.getElementById('modeSelect').focus(), 50);
+}
+function closeSheet(){
+  sheet.classList.remove('open');
+  backdrop.classList.remove('open');
+  sheet.setAttribute('aria-hidden','true');
+  backdrop.setAttribute('aria-hidden','true');
+  optionsBtn.setAttribute('aria-expanded','false');
+  document.body.style.overflow = (document.body.classList.contains('lock-layout') ? 'hidden' : '');
+  if (lastFocus && lastFocus.focus) setTimeout(()=>lastFocus.focus(), 0);
+}
+
+optionsBtn.addEventListener('click', ()=>{
+  if (sheet.classList.contains('open')) closeSheet();
+  else openSheet();
+});
+closeSheetBtn.addEventListener('click', closeSheet);
+backdrop.addEventListener('click', closeSheet);
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
+  // basic focus trap (simple)
+  if (e.key === 'Tab' && sheet.classList.contains('open')){
+    const focusables = sheet.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const list = Array.from(focusables).filter(x=>!x.disabled);
+    if (!list.length) return;
+    const first = list[0];
+    const last = list[list.length-1];
+    if (e.shiftKey && document.activeElement === first){
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last){
+      e.preventDefault(); first.focus();
+    }
+  }
+});
+
+/* =========================
+   Toggles + persistence
+========================= */
+function applyMobileMode(enabled){
+  document.body.classList.toggle('mobile-mode', !!enabled);
+  localStorage.setItem(STORE.mobile, enabled ? '1' : '0');
+  document.getElementById('mobileToggle').checked = !!enabled;
+}
+function setLockLayout(enabled){
+  document.body.classList.toggle('lock-layout', !!enabled);
+  localStorage.setItem(STORE.lock, enabled ? '1' : '0');
+  document.getElementById('lockToggle').checked = !!enabled;
+
+  // when locking, close sheet
+  if (enabled){
+    closeSheet();
+    toast('Locked.');
+  } else {
+    document.body.style.overflow = '';
+    toast('Unlocked.');
+  }
+}
+function applyA11y(){
+  const a11y = loadJSON(STORE.a11y, { hc:false, ln:false, rt:false });
+  document.body.classList.toggle('high-contrast', !!a11y.hc);
+  document.body.classList.toggle('large-numbers', !!a11y.ln);
+  document.body.classList.toggle('reduce-transparency', !!a11y.rt);
+
+  document.getElementById('hcToggle').checked = !!a11y.hc;
+  document.getElementById('lnToggle').checked = !!a11y.ln;
+  document.getElementById('rtToggle').checked = !!a11y.rt;
+}
+function setA11yPatch(patch){
+  const a11y = loadJSON(STORE.a11y, { hc:false, ln:false, rt:false });
+  const next = { ...a11y, ...patch };
+  saveJSON(STORE.a11y, next);
+  applyA11y();
+}
+
+// Role radio
+document.getElementById('roleDef').addEventListener('change', ()=>{ if (document.getElementById('roleDef').checked) { setRole('def'); logEvent('roleSet',{side:'def'});} });
+document.getElementById('rolePros').addEventListener('change', ()=>{ if (document.getElementById('rolePros').checked){ setRole('pros'); logEvent('roleSet',{side:'pros'});} });
+
+// Toggles
+document.getElementById('mobileToggle').addEventListener('change', (e)=> applyMobileMode(e.target.checked));
+document.getElementById('lockToggle').addEventListener('change', (e)=> setLockLayout(e.target.checked));
+document.getElementById('hcToggle').addEventListener('change', (e)=> setA11yPatch({hc:e.target.checked}));
+document.getElementById('lnToggle').addEventListener('change', (e)=> setA11yPatch({ln:e.target.checked}));
+document.getElementById('rtToggle').addEventListener('change', (e)=> setA11yPatch({rt:e.target.checked}));
+
+/* =========================
+   Mode select with prompt
+========================= */
+const modeSelect = document.getElementById('modeSelect');
+modeSelect.addEventListener('change', ()=>{
+  const newMode = modeSelect.value;
+  if (newMode === getMode()) return;
+
+  if (anyTimerRunning() || speechLog.length){
+    showConfirmSwitch(newMode);
+  } else {
+    applyMode(newMode, false);
+    toast(`Mode: ${newMode.toUpperCase()}`);
+  }
+});
+
+// Confirm modal buttons
+document.getElementById('confirmResetSwitch').addEventListener('click', ()=>{
+  if (!pendingMode) return closeConfirm();
+  closeConfirm();
+  applyMode(pendingMode, true);
+  toast(`Mode switched.`);
+});
+document.getElementById('confirmLogSwitch').addEventListener('click', ()=>{
+  if (!pendingMode) return closeConfirm();
+  closeConfirm();
+  applyMode(pendingMode, false);
+  toast(`Mode switched.`);
+});
+document.getElementById('confirmCancel').addEventListener('click', ()=>{
+  // revert select UI
+  modeSelect.value = getMode();
+  closeConfirm();
+});
+
+/* =========================
+   Wake Lock
+========================= */
+let wakeLock = null;
+async function requestWakeLock(){
+  try{
+    if (!('wakeLock' in navigator)) return false;
+    wakeLock = await navigator.wakeLock.request('screen');
+    return true;
+  }catch{
+    return false;
+  }
+}
+async function releaseWakeLock(){
+  try{ if (wakeLock) await wakeLock.release(); }catch{}
+  wakeLock = null;
+}
+const wakeToggle = document.getElementById('wakeToggle');
+wakeToggle.addEventListener('change', async ()=>{
+  if (wakeToggle.checked){
+    const ok = await requestWakeLock();
+    if (!ok) wakeToggle.checked = false;
+  } else {
+    await releaseWakeLock();
+  }
+  saveJSON(STORE.wake, { enabled: wakeToggle.checked });
+});
+document.addEventListener('visibilitychange', async ()=>{
+  if (document.visibilityState === 'visible' && wakeToggle.checked){
+    await requestWakeLock();
+  }
+});
+
+/* =========================
+   Init
+========================= */
+(function init(){
+  // Role
+  const r = getRole();
+  if (r) setRole(r);
+
+  // Mode
+  const m = getMode();
+  setMode(m);
+  document.getElementById('segmentBar').style.display = (m === 'amta') ? 'flex' : 'none';
+
+  // Mobile
+  applyMobileMode(localStorage.getItem(STORE.mobile) === '1');
+
+  // Lock layout
+  setLockLayout(localStorage.getItem(STORE.lock) === '1');
+
+  // Accessibility
+  applyA11y();
+
+  // Wake
+  const w = loadJSON(STORE.wake, { enabled:false });
+  if (w.enabled){
+    wakeToggle.checked = true;
+    requestWakeLock().then(ok => { if (!ok) wakeToggle.checked = false; });
+  }
+
+  // Segment default
+  setSegment('opening');
 
   // Round defaults to 0:00 and does not auto-start
   round.reset();
 
-  // ---------- Role (persisted; never auto-changed) ----------
-  const rolePros = document.getElementById('rolePros');
-  const roleDef  = document.getElementById('roleDef');
-
-  function getRole() {
-    const saved = localStorage.getItem('mt_role');
-    if (saved === 'pros' || saved === 'def') return saved;
-    return null;
-  }
-  function setRole(r) {
-    localStorage.setItem('mt_role', r);
-    rolePros.checked = r === 'pros';
-    roleDef.checked  = r === 'def';
-  }
-
-  const initialRole = getRole();
-  if (initialRole) setRole(initialRole);
-
-  rolePros.addEventListener('change', () => { if (rolePros.checked) setRole('pros'); });
-  roleDef.addEventListener('change', () => { if (roleDef.checked) setRole('def'); });
-
-  // ---------- Speech log ----------
-  function loadSpeechLog() {
-    try { return JSON.parse(localStorage.getItem('mt_speech_log') || '[]'); }
-    catch { return []; }
-  }
-  function saveSpeechLog(log) {
-    localStorage.setItem('mt_speech_log', JSON.stringify(log));
-  }
-  let speechLog = loadSpeechLog();
-
-  function maybeLogCurrentSpeech(reason) {
-    const ms = speech.getElapsedMs();
-    if (ms < 1000) return false;
-    const seconds = Math.floor(ms / 1000);
-    speechLog.push({
-      seconds,
-      role: getRole() || 'unselected',
-      at: new Date().toISOString(),
-      reason
-    });
-    saveSpeechLog(speechLog);
-    return true;
-  }
-
-  // ---------- UI refs ----------
-  const speechTimeEl = document.getElementById('speechTime');
-  const prosTimeEl   = document.getElementById('prosTime');
-  const defTimeEl    = document.getElementById('defTime');
-  const roundTimeEl  = document.getElementById('roundTime');
-
-  const speechHint = document.getElementById('speechHint');
-  const prosHint   = document.getElementById('prosHint');
-  const defHint    = document.getElementById('defHint');
-  const roundHint  = document.getElementById('roundHint');
-  const runningIndicator = document.getElementById('runningIndicator');
-
-  const logList = document.getElementById('logList');
-  const logHint = document.getElementById('logHint');
-
-  // ---------- Mutual exclusion: pros/def never run together ----------
-  function startPros() { if (def.running) def.stop(); pros.start(); }
-  function startDef()  { if (pros.running) pros.stop(); def.start(); }
-
-  // ---------- Render loop ----------
-  function render() {
-    speechTimeEl.textContent = formatMsToMMSS(speech.getElapsedMs());
-    prosTimeEl.textContent   = formatMsToMMSS(pros.getElapsedMs());
-    defTimeEl.textContent    = formatMsToMMSS(def.getElapsedMs());
-    roundTimeEl.textContent  = formatMsToMMSS(round.getElapsedMs());
-
-    speechHint.textContent = speech.running ? 'Running' : 'Stopped';
-    prosHint.textContent   = pros.running   ? 'Running' : 'Stopped';
-    defHint.textContent    = def.running    ? 'Running' : 'Stopped';
-    roundHint.textContent  = round.running  ? 'Running' : 'Stopped';
-
-    const running = [];
-    if (speech.running) running.push('Speech');
-    if (pros.running)   running.push('Pros');
-    if (def.running)    running.push('Def');
-    if (round.running)  running.push('Round');
-    runningIndicator.textContent = running.length ? `Running: ${running.join(', ')}` : 'All stopped';
-  }
-  setInterval(render, 200);
-  render();
-
-  // ---------- Speech controls with role sync ----------
-  function speechStartSynced() {
-    speech.start();
-    const r = getRole();
-    if (r === 'pros') startPros();
-    if (r === 'def')  startDef();
-  }
-  function speechPauseSynced() {
-    speech.stop();
-    const r = getRole();
-    if (r === 'pros') pros.stop();
-    if (r === 'def')  def.stop();
-  }
-
-  document.getElementById('speechStart').addEventListener('click', speechStartSynced);
-  document.getElementById('speechPause').addEventListener('click', speechPauseSynced);
-  document.getElementById('speechReset').addEventListener('click', () => {
-    maybeLogCurrentSpeech('speech_reset');
-    speech.reset();
-  });
-
-  // ---------- Side controls ----------
-  document.getElementById('prosStart').addEventListener('click', startPros);
-  document.getElementById('prosPause').addEventListener('click', () => pros.stop());
-  document.getElementById('prosReset').addEventListener('click', () => pros.reset());
-
-  document.getElementById('defStart').addEventListener('click', startDef);
-  document.getElementById('defPause').addEventListener('click', () => def.stop());
-  document.getElementById('defReset').addEventListener('click', () => def.reset());
-
-  // ---------- Round controls (manual only) ----------
-  document.getElementById('roundStart').addEventListener('click', () => round.start());
-  document.getElementById('roundPause').addEventListener('click', () => round.stop());
-  document.getElementById('roundReset').addEventListener('click', () => round.reset());
-
-  // ---------- Objections mode (pause/resume only running set; NOT round) ----------
-  let pausedSet = { speech: false, pros: false, def: false };
-
-  function objectionPause() {
-    pausedSet = { speech: speech.running, pros: pros.running, def: def.running };
-    speech.stop(); pros.stop(); def.stop();
-  }
-  function objectionResume() {
-    if (pausedSet.speech) speech.start();
-    if (pausedSet.pros) startPros();
-    if (pausedSet.def) startDef();
-    pausedSet = { speech: false, pros: false, def: false };
-  }
-
-  document.getElementById('objectionPause').addEventListener('click', objectionPause);
-  document.getElementById('objectionResume').addEventListener('click', objectionResume);
-
-  // ---------- End Round / Reset Everything ----------
-  function endRound() {
-    maybeLogCurrentSpeech('end_round');
-    speech.stop(); pros.stop(); def.stop(); round.stop();
-    renderLog();
-    render();
-  }
-  document.getElementById('endRoundBtn').addEventListener('click', endRound);
-
-  function resetEverything() {
-    speech.stop(); pros.stop(); def.stop(); round.stop();
-    speech.reset(); pros.reset(); def.reset(); round.reset();
-    speechLog = [];
-    saveSpeechLog(speechLog);
-    renderLog();
-    render();
-  }
-  document.getElementById('resetEverythingBtn').addEventListener('click', resetEverything);
-
-  // ---------- Log UI + Export ----------
-  function renderLog() {
-    logList.innerHTML = '';
-    if (!speechLog.length) {
-      logHint.textContent = 'No speeches saved yet';
-      return;
-    }
-    logHint.textContent = `${speechLog.length} speech${speechLog.length === 1 ? '' : 'es'} saved`;
-
-    speechLog.forEach((item, idx) => {
-      const li = document.createElement('li');
-      li.className = 'logitem';
-
-      const left = document.createElement('div');
-      left.innerHTML = `<div class="meta">Speech ${idx+1} • ${item.role}</div>`;
-
-      const right = document.createElement('div');
-      right.textContent = formatMsToMMSS(item.seconds * 1000);
-
-      li.appendChild(left);
-      li.appendChild(right);
-      logList.appendChild(li);
-    });
-  }
-
-  function buildExportText() {
-    const lines = [];
-    lines.push('Mock Trial Speech Log');
-    lines.push(`Exported: ${new Date().toLocaleString()}`);
-    lines.push('');
-    if (!speechLog.length) {
-      lines.push('(No speeches logged)');
-      return lines.join('\n');
-    }
-    speechLog.forEach((item, i) => {
-      lines.push(`${i+1}. ${item.role} — ${formatMsToMMSS(item.seconds*1000)}`);
-    });
-    lines.push('');
-    const totalSpeechSeconds = speechLog.reduce((a,b)=>a+b.seconds,0);
-    lines.push(`Total speech time logged: ${formatMsToMMSS(totalSpeechSeconds*1000)}`);
-    return lines.join('\n');
-  }
-
-  async function exportLog() {
-    const text = buildExportText();
-    try {
-      await navigator.clipboard.writeText(text);
-      logHint.textContent = `Copied to clipboard ✓ (${speechLog.length} speeches)`;
-    } catch {
-      window.prompt('Copy this log:', text);
-    }
-  }
-
-  document.getElementById('exportLogBtn').addEventListener('click', exportLog);
-  document.getElementById('clearLogBtn').addEventListener('click', () => {
-    speechLog = [];
-    saveSpeechLog(speechLog);
-    renderLog();
-  });
-
+  // Logs
   renderLog();
 
-  // ---------- Wake Lock ----------
-  let wakeLock = null;
-  async function requestWakeLock() {
-    try {
-      if (!('wakeLock' in navigator)) return false;
-      wakeLock = await navigator.wakeLock.request('screen');
-      return true;
-    } catch { return false; }
-  }
-  async function releaseWakeLock() {
-    try { if (wakeLock) await wakeLock.release(); } catch {}
-    wakeLock = null;
-  }
-  const wakeToggle = document.getElementById('wakeToggle');
-  wakeToggle.addEventListener('change', async () => {
-    if (wakeToggle.checked) {
-      const ok = await requestWakeLock();
-      if (!ok) wakeToggle.checked = false;
-    } else {
-      await releaseWakeLock();
-    }
-    localStorage.setItem('mt_wake', JSON.stringify({ enabled: wakeToggle.checked }));
-  });
-  try {
-    const s = JSON.parse(localStorage.getItem('mt_wake') || '{}');
-    if (s.enabled) {
-      wakeToggle.checked = true;
-      requestWakeLock().then(ok => { if (!ok) wakeToggle.checked = false; });
-    }
-  } catch {}
-  document.addEventListener('visibilitychange', async () => {
-    if (document.visibilityState === 'visible' && wakeToggle.checked) {
-      await requestWakeLock();
-    }
-  });
+  // Pools UI
+  refreshAmtaPoolUI();
 
-  // ---------- Service worker ----------
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    });
-  }
+  // Initial render
+  render();
+  logEvent('appLoad', {});
+})();
+
+/* =========================
+   Service worker
+========================= */
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
